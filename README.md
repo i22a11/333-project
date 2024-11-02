@@ -32,7 +32,7 @@ This project is a comprehensive room management system designed to streamline th
 1. Malak aljamri - [malakaljamri](https://github.com/malakaljamri) - 202109782
 2. Abdulrahman Idrees - [@akhaled01](https://github.com/akhaled01) - 202200729
 3. Mohammad Alasad - [@mohammedALASAD](https://github.com/mohammedALASAD) - 202107792
-4. Maryam - [@xmctq](https://github.com/xmctq) - 202204976
+4. Maryam Alhawi - [@xmctq](https://github.com/xmctq) - 202204976
 
 ## License
 
