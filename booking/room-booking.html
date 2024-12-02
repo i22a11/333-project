@@ -1,0 +1,72 @@
+<div class="flex flex-col md:flex-row md:space-x-3 w-full">
+    <div class="flex-1 bg-white max-w-xl px-10">
+        <h1 class="py-5 text-xl font-semibold text-gray-800">
+            Booking System
+        </h1>
+        <form id="booking-form" class="space-y-6">
+            <div>
+                <label for="room" class="block text-sm font-medium text-gray-700">Select Room:</label>
+                <select id="room" name="room_id"
+                    class="mt-2 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <!-- Populate rooms dynamically -->
+                    <option value="1">Room A</option>
+                    <option value="2">Room B</option>
+                    <option value="3">Room C</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="date" class="block text-sm font-medium text-gray-700">Booking Date:</label>
+                <input type="date" id="date" name="booking_date" required
+                    class="mt-2 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="time" class="block text-sm font-medium text-gray-700">Select Room:</label>
+                <select id="time" name="time"
+                    class="mt-2 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <!-- Populate time dynamically -->
+                    <option value="1">7:00 am - 7:50 am</option>
+                    <option value="2">8:00 am - 8:50 am</option>
+                    <option value="3">9:00 am - 9:50 am</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="bg-[#11101D] text-white py-3 px-6 rounded-md hover:bg-[#2c2a36] focus:outline-none focus:ring-2 focus:ring-[#11101D] focus:ring-opacity-50">
+                    Book Room
+                </button>
+            </div>
+        </form>
+    </div>
+    <div id="userBookings" class="flex-1 bg-white  px-10 mt-8">
+        <h2 class="text-lg font-semibold text-gray-800">Your Bookings</h2>
+        <table class="w-full mt-4 table-auto border-collapse border border-gray-300 shadow-md rounded-md">
+            <thead>
+                <tr class="bg-gray-100 text-left text-sm font-medium text-gray-700">
+                    <th class="border border-gray-300 px-4 py-2">Room</th>
+                    <th class="border border-gray-300 px-4 py-2">Date</th>
+                    <th class="border border-gray-300 px-4 py-2">Time</th>
+                    <th class="border border-gray-300 px-4 py-2">Status</th>
+                    <th class="border border-gray-300 px-4 py-2"></th>
+                </tr>
+            </thead>
+            <tbody id="bookingsTableBody" class="text-sm text-gray-800">
+                <!-- Populate bookings dynamically using JS -->
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-gray-300 px-4 py-2">Room A</td>
+                    <td class="border border-gray-300 px-4 py-2">1/1/2024</td>
+                    <td class="border border-gray-300 px-4 py-2">10:00 AM</td>
+                    <td class="border border-gray-300 px-4 py-2">Confirmed</td>
+                    <td
+                        class="border border-gray-300 px-4 py-2 text-center text-red-600 hover:text-red-800 cursor-pointer">
+                        Cancel </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script src="booking/booking.js"></script>

@@ -59,11 +59,11 @@
         </ul>
     </div>
 
-    <section class="home-section">
-        <header>
+    <section class="home-section" class="h-full w-full">
+        <header class="">
             <!-- Navbar -->
             <nav class="shadow-md py-3 px-3 ">
-                <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="max-w-6xl px-4 py-3 flex justify-between items-center">
                     <!-- Project Name (Logo) -->
                     <div class="text-2xl font-semibold">
                         <a href="#">ProjectName</a>
@@ -87,7 +87,7 @@
                         include('room-browsing.php');
                         break;
                     case 'room-booking':
-                        include('room-booking.html');
+                        include('booking/room-booking.html');
                         break;
                     case 'analytics':
                         include('analytics.php');
