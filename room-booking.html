@@ -1,0 +1,52 @@
+<div class="h-full w-full bg-white max-w-xl  p-10">
+    <form id="booking-form" class="space-y-6">
+        <div>
+            <label for="room" class="block text-sm font-medium text-gray-700">Select Room:</label>
+            <select id="room" name="room_id"
+                class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <!-- Populate rooms dynamically -->
+            </select>
+        </div>
+
+        <div>
+            <label for="date" class="block text-sm font-medium text-gray-700">Booking Date:</label>
+            <input type="date" id="date" name="booking_date" required
+                class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <label for="start-time" class="block text-sm font-medium text-gray-700">Start Time:</label>
+            <input type="time" id="start-time" name="start_time" required
+                class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <label for="end-time" class="block text-sm font-medium text-gray-700">End Time:</label>
+            <input type="time" id="end-time" name="end_time" required
+                class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+            <button type="submit"
+                class="bg-[#11101D] text-white py-3 px-6 rounded-md hover:bg-[#2c2a36] focus:outline-none focus:ring-2 focus:ring-[#11101D] focus:ring-opacity-50">
+                Book Room
+            </button>
+
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('booking-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const response = await fetch('book_room.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            alert(result.message);
+        });
+    </script>
+</div>
