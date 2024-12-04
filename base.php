@@ -1,3 +1,11 @@
+<?php
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header("location: ./demo_login/demo_login.php");
+        exit;
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +21,7 @@
 <body>
     <div class="sidebar">
         <div class="sidebar-title">
-            <div class="sidebar-title-name">LOGO</div>
+            <div class="sidebar-title-name"></div>
             <i class='bx bx-menu' id="sidebar-button"></i>
         </div>
         <ul class="nav-list">
@@ -53,7 +61,7 @@
                 <span class="tooltip">Feedback</span>
             </li>
             <li class="profile">
-                <span class="name">USERNAME</span>
+                <span class="text-white text-center">LOGOUT</span>
                 <i class='bx bx-log-out' id="logout"></i>
             </li>
         </ul>
