@@ -59,7 +59,7 @@ document.addEventListener('click', async function (event) {
         const bookingId = event.target.dataset.bookingId;
         // Send a request to the server to cancel the booking
         try {
-            const response = await fetch('cancel_booking.php', {
+            const response = await fetch('./booking/cancel_booking.php', {
                 method: 'POST',
                 body: JSON.stringify({ booking_id: bookingId }),
                 headers: { 'Content-Type': 'application/json' }

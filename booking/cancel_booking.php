@@ -1,5 +1,21 @@
 <?php
-    require 'db_connection.php';
+    require '../db_connection.php';
+    $pdo = db_connect();
+
+    // Check if the user is logged in, if not then redirect him to login page
+    /*if (!isset($_SESSION['user_id'])) {
+        header("location: login.php");
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        exit;
+    } else {
+        echo cancelBooking($_SESSION['user_id'], $_POST['booking_id']);
+    }*/
+
+    echo cancelBooking(1, 1);
 
     function cancelBooking($bookingId, $userId) {
         global $pdo;
@@ -14,21 +30,6 @@
             ':user_id' => $userId,
         ]);
 
-        return ['success' => $stmt->rowCount() > 0, 'message' => $stmt->rowCount() > 0 ? 'Booking cancelled successfully.' : 'Cancellation failed or not allowed.'];
-    }
-
-    // Check if user is logged in
-    if (isset($_SESSION['user_id'])) {
-        $data = json_decode(file_get_contents('php://input'), true);
-        $userId = $_SESSION['user_id'];
-        $bookingId = $data['booking_id'] ?? null;
-    
-        if ($bookingId) {
-            echo json_encode(cancelBooking($bookingId, $userId));
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid booking ID.']);
-        }
-    } else {
-        echo json_encode(['success' => false, 'message' => 'User not logged in.']);
+        return json_encode(['success' => $stmt->rowCount() > 0, 'message' => $stmt->rowCount() > 0 ? 'Booking cancelled successfully.' : 'Cancellation failed.']);
     }
 ?>
