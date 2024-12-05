@@ -15,6 +15,75 @@ export default class RoomManagement extends HTMLElement {
     this.rooms = [];
   }
 
+  connectedCallback() {
+    this.render();
+    this.attachEventListeners();
+  }
+
+  attachEventListeners() {
+    const addRoomBtn = this.container.querySelector('#add-room-btn');
+    const addRoomDialog = document.querySelector('#add-room-dialog');
+    const editRoomDialog = document.querySelector('#edit-room-dialog');
+
+    if (addRoomBtn) {
+      addRoomBtn.addEventListener('click', () => {
+        addRoomDialog?.open();
+      });
+    }
+
+    // Add event listeners for delete and edit buttons
+    this.rooms.forEach(room => {
+      const deleteButton = this.container.querySelector(`button[data-delete-room="${room.id}"]`);
+      const editButton = this.container.querySelector(`button[data-edit-room="${room.id}"]`);
+      
+      if (deleteButton) {
+        deleteButton.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to delete this room?')) {
+            await InvokeDeleteRoom(room.id);
+            this.rooms = this.rooms.filter(r => r.id !== room.id);
+            this.render();
+          }
+        });
+      }
+
+      if (editButton) {
+        editButton.addEventListener('click', () => {
+          // Populate form fields
+          const form = document.getElementById('edit-room-form');
+          if (form) {
+            const idInput = form.querySelector('#edit-room-id');
+            const nameInput = form.querySelector('#edit-room-name');
+            const capacityInput = form.querySelector('#edit-room-capacity');
+            const equipmentInput = form.querySelector('#edit-room-equipment');
+
+            if (idInput) idInput.value = room.id;
+            if (nameInput) nameInput.value = room.name;
+            if (capacityInput) capacityInput.value = room.capacity;
+            if (equipmentInput) equipmentInput.value = room.equipment;
+          }
+          editRoomDialog?.open();
+        });
+      }
+    });
+
+    // Handle edit form submission
+    const editForm = document.getElementById('edit-room-form');
+    if (editForm) {
+      editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await editRoom(editForm, {
+          id: editForm.querySelector('#edit-room-id').value,
+          name: editForm.querySelector('#edit-room-name').value,
+          capacity: parseInt(editForm.querySelector('#edit-room-capacity').value),
+          equipment: editForm.querySelector('#edit-room-equipment').value
+        });
+        editRoomDialog?.close();
+        // Refresh the page to show updated data
+        window.location.reload();
+      });
+    }
+  }
+
   /**
    *
    * @param {import("../types.mjs").Room} room
@@ -29,6 +98,10 @@ export default class RoomManagement extends HTMLElement {
     this.container.innerHTML = `
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="text-xl font-semibold text-gray-800">Room Management</h2>
+                <button id="add-room-btn" class="flex items-center rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+                    <i class="fas fa-plus-circle mr-2 h-5 w-5"></i>
+                    Add Room
+                </button>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -65,8 +138,7 @@ export default class RoomManagement extends HTMLElement {
                         <input type="text" id="edit-room-equipment" name="equipment" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm" required>
                     </div>
                 </form>
-                <button slot="cancel" type="button">Cancel</button>
-                <button slot="confirm" type="submit">Save Changes</button>
+                <button slot="confirm" type="submit" class="button button-primary">Save Changes</button>
             </custom-dialog>
         `;
 
@@ -133,7 +205,7 @@ export default class RoomManagement extends HTMLElement {
       const newAddRoomBtn = addRoomBtn.cloneNode(true);
       addRoomBtn.parentNode.replaceChild(newAddRoomBtn, addRoomBtn);
       newAddRoomBtn.addEventListener("click", () => {
-        document.getElementById("add-room-dialog")?.showModal();
+        document.getElementById("add-room-dialog")?.open();
       });
     }
   }

@@ -161,7 +161,6 @@ export default class CustomDialog extends HTMLElement {
                                 <slot></slot>
                             </div>
                             <div class="dialog-footer">
-                                <slot name="cancel"></slot>
                                 <slot name="confirm"></slot>
                             </div>
                         </div>

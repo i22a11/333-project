@@ -7,20 +7,25 @@ try {
     
     $stmt = $db->prepare("
         SELECT 
-            b.id,
+            b.booking_id,
             b.user_id,
             b.room_id,
-            b.check_in_date,
-            b.check_out_date,
+            b.date,
+            b.time,
+            b.admin_id,
             b.status,
-            b.created_at,
-            r.name as room_name,
+            r.room_name,
+            r.image_url,
             u.name as user_name,
-            u.email as user_email
-        FROM bookings b
-        JOIN rooms r ON b.room_id = r.id
-        JOIN users u ON b.user_id = u.id
-        ORDER BY b.created_at DESC
+            u.email as user_email,
+            u.role as user_role,
+            a.name as admin_name,
+            a.email as admin_email
+        FROM Bookings b
+        JOIN Rooms r ON b.room_id = r.room_id
+        JOIN Users u ON b.user_id = u.user_id
+        LEFT JOIN Users a ON b.admin_id = a.user_id
+        ORDER BY b.date DESC, b.time DESC
     ");
     
     $stmt->execute();

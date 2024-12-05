@@ -25,10 +25,10 @@
                         </button>
                     </div>
 
-                    <button id="add-room-btn" class="flex items-center rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-                        <i class="fas fa-plus-circle mr-2 h-5 w-5"></i>
-                        Add Room
-                    </button>
+                    <a href="/admin/bookings.php" class="flex items-center rounded-md bg-green-500 px-4 py-2 text-white hover:bg-green-600">
+                        <i class="fas fa-calendar-alt mr-2 h-5 w-5"></i>
+                        Manage Bookings
+                    </a>
                 </div>
             </header>
 
@@ -55,7 +55,6 @@
                 <textarea name="equipment" id="equipment" placeholder="Room Equipment" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-150 ease-in-out resize-none h-24"></textarea>
             </div>
             <div class="flex justify-end space-x-3">
-                <button type="button" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out" data-close>Cancel</button>
                 <button type="submit" id="submit-room" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">Submit</button>
             </div>
         </form>
