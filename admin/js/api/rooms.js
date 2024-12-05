@@ -1,0 +1,92 @@
+/**
+ *
+ * @param {string} id
+ * @returns
+ */
+export const InvokeDeleteRoom = async (id) => {
+  if (!id) {
+    alert("Room ID is required to delete a room.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/admin/api/delete-room", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete the room.");
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      alert(result.message || "Room deleted successfully!");
+    } else {
+      alert(result.message || "Failed to delete the room.");
+    }
+  } catch (error) {
+    console.error("Error deleting room:", error);
+    alert("An error occurred while trying to delete the room.");
+  }
+};
+
+/**
+ *
+ * @param {string} name
+ * @param {number} capacity
+ * @param {string} equipment
+ */
+export const InvokeCreateRoom = async (name, capacity, equipment) => {
+  if (name && capacity && equipment) {
+    console.log("invoking create-room");
+
+    try {
+      const response = await fetch("/admin/api/create-room", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          capacity: capacity,
+          equipment: equipment,
+        }),
+      });
+
+      if (!(response.status === 201)) {
+        throw new Error("Failed to create room.");
+      }
+    } catch (error) {
+      console.error("Error creating room:", error);
+    }
+  } else {
+    alert("Please fill in all fields before submitting.");
+  }
+};
+
+/**
+ * Fetches the list of rooms from the server.
+ * @returns {Promise<import("../types.mjs").Room[] | undefined>}
+ */
+export const fetchRooms = async () => {
+  try {
+    const res = await fetch("/admin/api/info");
+    const rooms = await res.json();
+    
+    // @ts-ignore
+    let parsedRooms = rooms.map((room) => ({
+      id: room.room_id,
+      name: room.room_name,
+      capacity: room.capacity,
+      equipment: room.equipment
+    }));
+
+    return parsedRooms;
+  } catch (error) {
+    alert("error fetching rooms, please try again later");
+  }
+};

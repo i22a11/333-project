@@ -1,4 +1,5 @@
-class CustomDialog extends HTMLElement {
+// @ts-nocheck
+export default class CustomDialog extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
