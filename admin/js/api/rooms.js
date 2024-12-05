@@ -90,3 +90,39 @@ export const fetchRooms = async () => {
     alert("error fetching rooms, please try again later");
   }
 };
+
+/**
+ * Invokes the edit room API endpoint
+ * @param {import("../types.mjs").Room} room
+ * @returns {Promise<void>}
+ */
+export const InvokeEditRoom = async (room) => {
+  if (!room.id || !room.name || !room.capacity || !room.equipment) {
+    alert("All fields are required to edit a room.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/admin/api/edit-room", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(room),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to edit the room.");
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      alert(result.message || "Room edited successfully!");
+    } else {
+      alert(result.message || "Failed to edit the room.");
+    }
+  } catch (error) {
+    console.error("Error editing room:", error);
+    alert("An error occurred while trying to edit the room.");
+  }
+};

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { InvokeDeleteRoom } from "../api/rooms.js";
+import { editRoom } from "../forms/editRoom.js";
 
 export default class RoomManagement extends HTMLElement {
   /**
@@ -46,11 +47,34 @@ export default class RoomManagement extends HTMLElement {
                     </tbody>
                 </table>
             </div>
+
+            <!-- Edit Room Dialog -->
+            <custom-dialog id="edit-room-dialog" title="Edit Room" description="Update room details">
+                <form id="edit-room-form" class="space-y-4">
+                    <input type="hidden" name="id" id="edit-room-id">
+                    <div>
+                        <label for="edit-room-name" class="block text-sm font-medium text-gray-700">Room Name</label>
+                        <input type="text" id="edit-room-name" name="name" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm" required>
+                    </div>
+                    <div>
+                        <label for="edit-room-capacity" class="block text-sm font-medium text-gray-700">Capacity</label>
+                        <input type="number" id="edit-room-capacity" name="capacity" min="1" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm" required>
+                    </div>
+                    <div>
+                        <label for="edit-room-equipment" class="block text-sm font-medium text-gray-700">Equipment</label>
+                        <input type="text" id="edit-room-equipment" name="equipment" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm" required>
+                    </div>
+                </form>
+                <button slot="cancel" type="button">Cancel</button>
+                <button slot="confirm" type="submit">Save Changes</button>
+            </custom-dialog>
         `;
 
     // Add event listeners for delete buttons
     this.rooms.forEach(room => {
       const deleteButton = this.container.querySelector(`button[data-delete-room="${room.id}"]`);
+      const editButton = this.container.querySelector(`button[data-edit-room="${room.id}"]`);
+      
       if (deleteButton) {
         // Remove any existing listeners
         const newDeleteButton = deleteButton.cloneNode(true);
@@ -65,6 +89,43 @@ export default class RoomManagement extends HTMLElement {
           }
         });
       }
+
+      if (editButton) {
+        // Remove any existing listeners
+        const newEditButton = editButton.cloneNode(true);
+        editButton.parentNode.replaceChild(newEditButton, editButton);
+        
+        newEditButton.addEventListener('click', () => {
+          const dialog = /** @type {import("./dialog").default} */ (
+            document.getElementById('edit-room-dialog')
+          );
+          const form = document.getElementById('edit-room-form');
+          
+          if (!dialog || !form) return;
+          
+          // Populate form with current room data
+          const idInput = form.querySelector('#edit-room-id');
+          const nameInput = form.querySelector('#edit-room-name');
+          const capacityInput = form.querySelector('#edit-room-capacity');
+          const equipmentInput = form.querySelector('#edit-room-equipment');
+          
+          if (idInput instanceof HTMLInputElement) idInput.value = room.id;
+          if (nameInput instanceof HTMLInputElement) nameInput.value = room.name;
+          if (capacityInput instanceof HTMLInputElement) capacityInput.value = String(room.capacity);
+          if (equipmentInput instanceof HTMLInputElement) equipmentInput.value = room.equipment;
+          
+          // Add confirm event listener
+          const confirmHandler = async () => {
+            if (form instanceof HTMLFormElement) {
+              await editRoom(form, room);
+              dialog.removeEventListener('confirm', confirmHandler);
+            }
+          };
+          
+          dialog.addEventListener('confirm', confirmHandler);
+          dialog.open();
+        });
+      }
     });
 
     const addRoomBtn = document.getElementById("add-room-btn");
@@ -72,7 +133,7 @@ export default class RoomManagement extends HTMLElement {
       const newAddRoomBtn = addRoomBtn.cloneNode(true);
       addRoomBtn.parentNode.replaceChild(newAddRoomBtn, addRoomBtn);
       newAddRoomBtn.addEventListener("click", () => {
-        document.getElementById("add-room-dialog")?.open();
+        document.getElementById("add-room-dialog")?.showModal();
       });
     }
   }
@@ -89,7 +150,7 @@ export default class RoomManagement extends HTMLElement {
               <td class="whitespace-nowrap px-6 py-4">${room.capacity}</td>
               <td class="whitespace-nowrap px-6 py-4">${room.equipment}</td>
               <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                  <button class="mr-2 text-indigo-600 hover:text-indigo-900">Edit</button>
+                  <button class="mr-2 text-indigo-600 hover:text-indigo-900" data-edit-room="${room.id}">Edit</button>
                   <button class="text-red-600 hover:text-red-900" data-delete-room="${room.id}">Delete</button>
               </td>
           </tr>
