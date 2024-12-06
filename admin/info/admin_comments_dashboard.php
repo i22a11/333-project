@@ -1,6 +1,6 @@
 <?php
-include('../includes/db.php');
-include('../controllers/CommentController.php');
+include('db.php');
+include('CommentController.php');
 
 // Fetch all comments
 $comments = getAllComments();
