@@ -1,3 +1,30 @@
+<?php
+require_once 'db_connection.php';
+
+try {
+    $conn = db_connect();
+    $stmt = $conn->prepare("
+        SELECT 
+            b.booking_id,
+            b.date,
+            b.time,
+            b.status,
+            r.room_name,
+            r.capacity,
+            u.name as user_name
+        FROM Bookings b 
+        JOIN Rooms r ON b.room_id = r.room_id 
+        JOIN Users u ON b.user_id = u.user_id 
+        ORDER BY b.date DESC, b.time DESC 
+        LIMIT 10
+    ");
+    $stmt->execute();
+    $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    $error = "Database error: " . $e->getMessage();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

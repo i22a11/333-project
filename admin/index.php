@@ -7,35 +7,8 @@
     <title>Admin Panel</title>
     <link rel="stylesheet" href="../output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
-    <script src="../components/dialog.js" defer></script>
-    <script src="./js/components/StatsCard.js" defer></script>
-    <script src="./js/components/RoomManagement.js" defer></script>
-    <script src="./js/index.js" defer></script>
+    <script src="/admin/js/index.js" type="module" defer></script>
 </head>
-
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-    $capacity = $_POST["capacity"];
-    $equipment = $_POST["equipment"];
-
-    if (empty($name) || empty($capacity) || empty($equipment)) {
-        echo "<script>
-                if (confirm('Please fill in all fields. Click OK to go back to the form.')) {
-                    window.location.href = '/admin/';
-                }
-              </script>";
-        exit;
-    }
-
-    $db = new PDO("mysql:host=127.0.0.1;dbname=csDB", "cs-user", "xqyCsCu");
-
-    $query = "INSERT INTO Rooms (room_name, capacity, equipment) VALUES (?, ?, ?)";
-    $stmt = $db->prepare($query);
-    $stmt->execute([$name, $capacity, $equipment]);
-}
-?>
 
 <body class="bg-gray-900">
     <div class="flex h-screen bg-gray-100">
@@ -44,13 +17,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button class="text-gray-500 lg:hidden">
                     <i class="fas fa-bars h-6 w-6"></i>
                 </button>
-                <div class="flex items-center">
+                <div class="flex items-center justify-between w-full">
                     <div class="relative">
                         <button class="flex items-center text-sm focus:outline-none">
                             <span class="hidden md:block">John Doe</span>
                             <i class="fas fa-chevron-down ml-1 h-4 w-4"></i>
                         </button>
                     </div>
+
+                    <a href="/admin/bookings.php" class="flex items-center rounded-md bg-green-500 px-4 py-2 text-white hover:bg-green-600">
+                        <i class="fas fa-calendar-alt mr-2 h-5 w-5"></i>
+                        Manage Bookings
+                    </a>
                 </div>
             </header>
 
@@ -63,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <custom-dialog id="add-room-dialog" title="Add Room" description="Add a new room to the system.">
-        <form id="add-room-form" class="space-y-6" action="" method="POST">
+        <form id="add-room-form" class="space-y-6">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Room Name</label>
                 <input type="text" name="name" id="name" placeholder="Room Name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-150 ease-in-out">
@@ -77,8 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea name="equipment" id="equipment" placeholder="Room Equipment" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-150 ease-in-out resize-none h-24"></textarea>
             </div>
             <div class="flex justify-end space-x-3">
-                <button type="button" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out" data-close>Cancel</button>
-                <button type="submit" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">Submit</button>
+                <button type="submit" id="submit-room" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">Submit</button>
             </div>
         </form>
     </custom-dialog>

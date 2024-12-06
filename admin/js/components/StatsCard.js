@@ -1,5 +1,13 @@
-class StatsCard {
+export default class StatsCard extends HTMLElement {
+  /**
+   *
+   * @param {string} icon
+   * @param {string} title
+   * @param {string} value
+   * @param {string} color
+   */
   constructor(icon, title, value, color) {
+    super();
     this.icon = icon;
     this.title = title;
     this.value = value;

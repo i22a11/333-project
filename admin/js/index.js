@@ -1,18 +1,13 @@
-const fetchRooms = async () => {
-  try {
-    const res = await fetch("/admin/info");
-
-    return res.json();
-  } catch (error) {
-    alert("error fetching rooms, please try again later");
-  }
-};
+import StatsCard from "./components/StatsCard.js";
+import RoomManagement from "./components/RoomManagement.js";
+import { fetchRooms } from "./api/rooms.js";
+import { addRoom } from "./forms/addRoom.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const statsContainer = document.getElementById("stats-container");
   const roomManagement = new RoomManagement("room-management");
 
-  const rooms = await fetchRooms();
+  const rooms = (await fetchRooms()) ?? [];
 
   // Render stats cards
   const statsCards = [
@@ -22,15 +17,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     new StatsCard("fas fa-calendar-check", "Today's Bookings", "8", "purple"),
   ];
 
-  statsContainer.innerHTML = statsCards.map((card) => card.render()).join("");
-
+  if (statsContainer) {
+    statsContainer.innerHTML = statsCards.map((card) => card.render()).join("");
+  }
 
   rooms.forEach((element) => {
     roomManagement.addRoom({
-      number: element.room_id,
-      name:  element.room_name,
+      id: element.id,
+      name: element.name,
       capacity: element.capacity,
       equipment: element.equipment,
     });
+  });
+
+  roomManagement.render();
+
+  document.getElementById("add-room-form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    await addRoom(document.getElementById("add-room-form"));
   });
 });

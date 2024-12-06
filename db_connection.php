@@ -3,6 +3,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
+
 function db_connect(): PDO
 {
     $host = 'localhost';
@@ -14,4 +15,3 @@ function db_connect(): PDO
     return new PDO($db, $db_user, $db_password, $options);
 }
 
-?>
