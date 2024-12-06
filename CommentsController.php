@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../models/db.php'; 
-require_once '../models/comment.php'; 
+require_once 'db.php'; 
+require_once '/comment.php'; 
 
 class CommentsController {
 
