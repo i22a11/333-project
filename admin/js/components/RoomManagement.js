@@ -96,27 +96,36 @@ export default class RoomManagement extends HTMLElement {
   render() {
     // Clear existing content
     this.container.innerHTML = `
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800">Room Management</h2>
-                <button id="add-room-btn" class="flex items-center rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-                    <i class="fas fa-plus-circle mr-2 h-5 w-5"></i>
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-gray-900">Room Management</h2>
+                <button id="add-room-btn" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">
+                    <i class="fas fa-plus-circle mr-2 h-4 w-4"></i>
                     Add Room
                 </button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Room Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Capacity</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Equipment</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+            <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                <table class="w-full table-fixed divide-y divide-gray-200">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Room Name</th>
+                            <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Capacity</th>
+                            <th scope="col" class="w-2/5 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Equipment</th>
+                            <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
-                        ${this.rooms
-                          .map((room) => this.renderRoomRow(room))
-                          .join("")}
+                        ${this.rooms.map((room) => this.renderRoomRow(room)).join("")}
+                        ${this.rooms.length === 0 ? `
+                          <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500">
+                              <div class="flex flex-col items-center justify-center space-y-2">
+                                <i class="fas fa-inbox text-gray-400 text-4xl mb-2"></i>
+                                <p>No rooms available</p>
+                                <p class="text-xs text-gray-400">Click "Add Room" to create a new room</p>
+                              </div>
+                            </td>
+                          </tr>
+                        ` : ''}
                     </tbody>
                 </table>
             </div>
@@ -217,13 +226,25 @@ export default class RoomManagement extends HTMLElement {
    */
   renderRoomRow(room) {
     return `
-          <tr>
-              <td class="whitespace-nowrap px-6 py-4">${room.name}</td>
-              <td class="whitespace-nowrap px-6 py-4">${room.capacity}</td>
-              <td class="whitespace-nowrap px-6 py-4">${room.equipment}</td>
-              <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                  <button class="mr-2 text-indigo-600 hover:text-indigo-900" data-edit-room="${room.id}">Edit</button>
-                  <button class="text-red-600 hover:text-red-900" data-delete-room="${room.id}">Delete</button>
+          <tr class="hover:bg-gray-50 transition-colors duration-150">
+              <td class="max-w-xs truncate px-6 py-4">
+                <span class="font-medium text-gray-900">${room.name}</span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700">
+                  ${room.capacity} seats
+                </span>
+              </td>
+              <td class="max-w-sm truncate px-6 py-4 text-sm text-gray-500">${room.equipment}</td>
+              <td class="px-6 py-4 text-right text-sm">
+                  <button class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors mr-2" data-edit-room="${room.id}">
+                    <i class="fas fa-edit mr-1.5 h-3.5 w-3.5"></i>
+                    Edit
+                  </button>
+                  <button class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors" data-delete-room="${room.id}">
+                    <i class="fas fa-trash-alt mr-1.5 h-3.5 w-3.5"></i>
+                    Delete
+                  </button>
               </td>
           </tr>
       `;

@@ -10,32 +10,32 @@
     <script src="/admin/js/index.js" type="module" defer></script>
 </head>
 
-<body class="bg-gray-900">
-    <div class="flex h-screen bg-gray-100">
-        <div class="flex flex-1 flex-col overflow-hidden">
-            <header class="flex h-16 items-center justify-between bg-white px-6 shadow">
-                <button class="text-gray-500 lg:hidden">
-                    <i class="fas fa-bars h-6 w-6"></i>
+<body class="bg-gray-50 antialiased">
+    <div class="flex min-h-screen">
+        <div class="flex flex-1 flex-col">
+            <header class="flex h-16 items-center justify-between bg-white px-4 sm:px-6 shadow-sm border-b border-gray-200">
+                <button class="text-gray-600 hover:text-gray-900 transition-colors lg:hidden focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md p-1">
+                    <i class="fas fa-bars h-5 w-5"></i>
                 </button>
                 <div class="flex items-center justify-between w-full">
                     <div class="relative">
-                        <button class="flex items-center text-sm focus:outline-none">
-                            <span class="hidden md:block">John Doe</span>
-                            <i class="fas fa-chevron-down ml-1 h-4 w-4"></i>
+                        <button class="flex items-center space-x-2 text-sm text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md px-2 py-1">
+                            <span class="hidden md:block font-medium">John Doe</span>
+                            <i class="fas fa-chevron-down h-4 w-4"></i>
                         </button>
                     </div>
 
-                    <a href="/admin/bookings.php" class="flex items-center rounded-md bg-green-500 px-4 py-2 text-white hover:bg-green-600">
-                        <i class="fas fa-calendar-alt mr-2 h-5 w-5"></i>
+                    <a href="/admin/bookings.php" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">
+                        <i class="fas fa-calendar-alt mr-2 h-4 w-4"></i>
                         Manage Bookings
                     </a>
                 </div>
             </header>
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                <h1 class="mb-6 text-3xl font-semibold text-gray-800">Dashboard</h1>
-                <div id="stats-container" class="mb-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4"></div>
-                <div id="room-management" class="rounded-lg bg-white p-6 shadow"></div>
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+                <div id="stats-container" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8"></div>
+                <div id="room-management" class="rounded-lg bg-white p-6 shadow-sm border border-gray-200"></div>
             </main>
         </div>
     </div>
@@ -44,18 +44,24 @@
         <form id="add-room-form" class="space-y-6">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Room Name</label>
-                <input type="text" name="name" id="name" placeholder="Room Name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                <input type="text" name="name" id="name" placeholder="Enter room name" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder-gray-400">
             </div>
             <div>
                 <label for="capacity" class="block text-sm font-medium text-gray-700">Room Capacity</label>
-                <input type="number" name="capacity" id="capacity" placeholder="Room Capacity" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                <input type="number" name="capacity" id="capacity" placeholder="Enter capacity" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder-gray-400">
             </div>
             <div>
                 <label for="equipment" class="block text-sm font-medium text-gray-700">Room Equipment</label>
-                <textarea name="equipment" id="equipment" placeholder="Room Equipment" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-150 ease-in-out resize-none h-24"></textarea>
+                <textarea name="equipment" id="equipment" placeholder="List available equipment" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder-gray-400 resize-none h-24"></textarea>
             </div>
             <div class="flex justify-end space-x-3">
-                <button type="submit" id="submit-room" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">Submit</button>
+                <button type="submit" id="submit-room" 
+                    class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">
+                    Add Room
+                </button>
             </div>
         </form>
     </custom-dialog>

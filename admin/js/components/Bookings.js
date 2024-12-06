@@ -56,16 +56,16 @@ export class Bookings extends HTMLElement {
    * @returns
    */
   getStatusBadgeClass(status) {
-    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
+    const baseClasses = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium";
     switch (status) {
       case "pending":
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        return `${baseClasses} bg-yellow-50 text-yellow-800`;
       case "confirmed":
-        return `${baseClasses} bg-green-100 text-green-800`;
+        return `${baseClasses} bg-green-50 text-green-800`;
       case "cancelled":
-        return `${baseClasses} bg-red-100 text-red-800`;
+        return `${baseClasses} bg-red-50 text-red-800`;
       default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+        return `${baseClasses} bg-gray-50 text-gray-800`;
     }
   }
 
@@ -85,82 +85,81 @@ export class Bookings extends HTMLElement {
 
   render() {
     this.innerHTML = `
-            <div class="rounded-lg bg-white shadow">
+            <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <table class="w-full table-fixed divide-y divide-gray-200">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">User</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Room</th>
+                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Date & Time</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Status</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            ${this.bookings
-                              .map(
-                                (booking) => `
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            ${this.bookings.length === 0 ? `
+                              <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
+                                  <div class="flex flex-col items-center justify-center space-y-2">
+                                    <i class="fas fa-calendar-times text-gray-400 text-4xl mb-2"></i>
+                                    <p>No bookings available</p>
+                                    <p class="text-xs text-gray-400">Bookings will appear here when users make reservations</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            ` : this.bookings.map((booking) => `
+                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900">${
-                                                  booking.user_name
-                                                }</div>
-                                                <div class="text-sm text-gray-500">${
-                                                  booking.user_email
-                                                }</div>
+                                            <div class="h-8 w-8 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center">
+                                                <i class="fas fa-user text-gray-500"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-gray-900">${booking.user_name}</div>
+                                                <div class="text-xs text-gray-500">${booking.user_email}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">${
-                                          booking.room_name
-                                        }</div>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-door-open text-gray-400 mr-2"></i>
+                                            <span class="text-sm text-gray-900">${booking.room_name}</span>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">${this.formatDateTime(
-                                          booking.date,
-                                          booking.time
-                                        )}</div>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock text-gray-400 mr-2"></i>
+                                            <span class="text-sm text-gray-900">${this.formatDateTime(booking.date, booking.time)}</span>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="${this.getStatusBadgeClass(
-                                          booking.status
-                                        )}">
-                                            ${
-                                              booking.status
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                              booking.status.slice(1)
-                                            }
+                                    <td class="px-6 py-4">
+                                        <span class="${this.getStatusBadgeClass(booking.status)}">
+                                            ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                        ${
-                                          booking.status === "pending"
-                                            ? `
-                                            <button 
-                                                data-booking-id="${booking.booking_id}" 
-                                                data-action="confirm"
-                                                class="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md">
-                                                Confirm
-                                            </button>
-                                            <button 
-                                                data-booking-id="${booking.booking_id}" 
-                                                data-action="cancel"
-                                                class="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md">
-                                                Cancel
-                                            </button>
-                                        `
-                                            : ""
-                                        }
+                                    <td class="px-6 py-4">
+                                        ${booking.status === "pending" ? `
+                                            <div class="flex space-x-2">
+                                                <button 
+                                                    data-booking-id="${booking.booking_id}" 
+                                                    data-action="confirm"
+                                                    class="inline-flex items-center rounded-md bg-green-50 px-2.5 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                                                    <i class="fas fa-check mr-1.5 h-3.5 w-3.5"></i>
+                                                    Confirm
+                                                </button>
+                                                <button 
+                                                    data-booking-id="${booking.booking_id}" 
+                                                    data-action="cancel"
+                                                    class="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                                                    <i class="fas fa-times mr-1.5 h-3.5 w-3.5"></i>
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        ` : ""}
                                     </td>
                                 </tr>
-                            `
-                              )
-                              .join("")}
+                            `).join("")}
                         </tbody>
                     </table>
                 </div>
