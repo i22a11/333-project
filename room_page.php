@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'db.php';  // Assuming this is your database connection
+require_once 'db.php'; 
 
 $room_id = $_GET['room_id'];
 
