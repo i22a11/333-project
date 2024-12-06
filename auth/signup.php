@@ -1,110 +1,129 @@
 <?php
+session_start();
+require_once '../db_connection.php';
 
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    $error = '';
 
-    include "../db_connection.php";
-
-    if(isset($_POST['submit'])){
-
-        $email = $_POST['email'];
-        $name = $_POST['name'];
-        $password = $_POST['password'];
-        $cpassword = $_POST['cpassword'];
-        
-
-        $error_msg = "";
-        $email_status = false;
-        $password_status = false;
-        $cpassword_status = false;
-
-
-        //email validation
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $email_status = true;
-        }else{
-            $error_msg = $error_msg . "Invalid Email format <br/>";
+    // Validate email format
+    if (!preg_match('/^[a-zA-Z0-9._%+-]+@\w*\.uob\.edu\.bh$/', $email)) {
+        $error = "Email must be a valid @uob.edu.bh address";
+    } elseif (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
+        $error = "All fields are required";
+    } elseif ($password !== $confirm_password) {
+        $error = "Passwords do not match";
+    } elseif (strlen($password) < 6) {
+        $error = "Password must be at least 6 characters long";
+    } else {
+        try {
+            $conn = db_connect();
+            
+            // Check if email already exists
+            $stmt = $conn->prepare("SELECT COUNT(*) FROM Users WHERE email = ?");
+            $stmt->execute([$email]);
+            if ($stmt->fetchColumn() > 0) {
+                $error = "Email already registered";
+            } else {
+                // Insert new user
+                $stmt = $conn->prepare("INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, 'user')");
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $stmt->execute([$name, $email, $hashed_password]);
+                
+                // Redirect to login page with success message
+                header("Location: login.php?registered=1");
+                exit();
+            }
+        } catch(PDOException $e) {
+            $error = "Database error: " . $e->getMessage();
         }
-
-        //confirm password validation
-        if ($password == $cpassword) {
-            $password_status = true;
-        }else{
-            $error_msg = $error_msg . "Confirm password and password does not match<br/>";
-        }
-
-        //password validation
-        $isValidPassword = filter_var($password, FILTER_VALIDATE_REGEXP, array(
-            "options" => array(
-                "regexp" => "/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])^.+$/"
-            )
-        ));
-
-        if ($isValidPassword) {
-            $cpassword_status = true;
-        }else{
-            $error_msg = $error_msg . "Password is weak<br/>";
-        }
-
-        //check all validation and default to deny
-        if($email_status && $password_status && $cpassword_status){
-
-            $db = db_connect();
-            $query = $db->prepare('INSERT INTO `users` (`email`, `name`, `password`,`role`) VALUES (?,?,?,?)');
-            $query->execute([$email,$name,hash('md5',$password),'user']);
-            header('Location:login.php');
-
-
-        }
-        
-
     }
-
-
+}
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Room Booking System</title>
+    <link rel="stylesheet" href="../output.css">
 </head>
-<body>
+<body class="bg-zinc-900 min-h-screen">
+    <div class="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md">
+            <div class="bg-zinc-800 px-8 py-10 shadow-md rounded-lg border border-zinc-700">
+                <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                    <h2 class="text-center text-3xl font-bold tracking-tight text-zinc-100">
+                        Create your account
+                    </h2>
+                    <p class="mt-2 text-center text-sm text-zinc-400">
+                        Already have an account?
+                        <a href="login.php" class="font-medium text-blue-400 hover:text-blue-300">Sign in</a>
+                    </p>
+                </div>
 
-<main class="container">
-    <article class="grid">
-        <section>
-            <hgroup>
-                <h1>Sign Up</h1>
-                <p>Create an account by filling in your details below.</p>
-            </hgroup>
-            <form method="post" action="signup.php">
-                <label for="email">
-                    Email address
-                    <input type="email" name="email" id="email" placeholder="Enter email" required>
-                </label>
-                <label for="name">
-                    Full Name
-                    <input type="text" name="name" id="name" placeholder="Enter full name" required>
-                </label>
-                <label for="password">
-                    Password
-                    <input type="password" name="password" id="password" placeholder="Enter password" required>
-                </label>
-                <label for="cpassword">
-                    Confirm Password
-                    <input type="password" name="cpassword" id="cpassword" placeholder="Confirm password" required>
-                </label>
-                <button type="submit" name="submit" class="contrast">Sign Up</button>
-            </form>
-            <p style="color: red;">
-                <?php if (isset($error_msg)) echo $error_msg; ?>
-            </p>
-        </section>
-    </article>
-</main>
+                <?php if (!empty($error)): ?>
+                    <div class="mt-6 rounded-md bg-red-900 p-4">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-200"><?php echo htmlspecialchars($error); ?></h3>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
+                <form class="mt-8 space-y-6" method="POST">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-zinc-300">Full Name</label>
+                            <div class="mt-1">
+                                <input id="name" name="name" type="text" required
+                                    class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
+                                    value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-zinc-300">Email address</label>
+                            <div class="mt-1">
+                                <input id="email" name="email" type="email" required pattern="[a-zA-Z0-9._%+-]+@\w*\.uob\.edu\.bh$"
+                                    class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
+                                    placeholder="example@uob.edu.bh"
+                                    value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                                <p class="mt-1 text-sm text-zinc-400">Must be a valid @uob.edu.bh email address</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-zinc-300">Password</label>
+                            <div class="mt-1">
+                                <input id="password" name="password" type="password" required
+                                    class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="confirm_password" class="block text-sm font-medium text-zinc-300">Confirm Password</label>
+                            <div class="mt-1">
+                                <input id="confirm_password" name="confirm_password" type="password" required
+                                    class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                            Sign up
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

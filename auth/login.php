@@ -1,76 +1,125 @@
 <?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
+session_start();
+require_once '../db_connection.php';
 
-    include "../db_connection.php";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $error = '';
 
-    if(isset($_POST['submit'])){
+    if (empty($email) || empty($password)) {
+        $error = "All fields are required";
+    } else {
+        try {
+            $conn = db_connect();
+            $stmt = $conn->prepare("SELECT user_id, name, password, role FROM Users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $password = hash('md5',$password);
-        
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_role'] = $user['role'];
 
-        $error_msg = "";
-
-        $db = db_connect();
-        $query = $db->prepare("SELECT * FROM users WHERE email = '".$email."' AND password = '".$password."'");
-
-        //die("SELECT * FROM users WHERE email = '".$email."' AND password = '".$password."'");
-        $query->execute();
-
-        $row_count = $query->rowCount();//Row count
-        if($row_count > 0){
-          $row = $query->fetch(PDO::FETCH_ASSOC);
-
-          session_start();
-          $_SESSION['user_id'] = $row['user_id'];
-
-          header('Location:profile.php');
-        }else{
-          $error_msg = "Invalid username or password";
+                if ($user['role'] === 'admin') {
+                    header("Location: ../admin/");
+                } else {
+                    header("Location: ../index.php");
+                }
+                exit();
+            } else {
+                $error = "Invalid email or password";
+            }
+        } catch(PDOException $e) {
+            $error = "Database error: " . $e->getMessage();
         }
-        
-
     }
+}
 
-
+// Check for registration success message
+$registration_success = isset($_GET['registered']) && $_GET['registered'] == 1;
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Room Booking System</title>
+    <link rel="stylesheet" href="../output.css">
 </head>
-<body>
+<body class="bg-zinc-900 min-h-screen">
+    <div class="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md">
+            <div class="bg-zinc-800 px-8 py-10 shadow-md rounded-lg border border-zinc-700">
+                <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                    <h2 class="text-center text-3xl font-bold tracking-tight text-zinc-100">
+                        Sign in to your account
+                    </h2>
+                    <p class="mt-2 text-center text-sm text-zinc-400">
+                        Don't have an account?
+                        <a href="signup.php" class="font-medium text-blue-400 hover:text-blue-300">Sign up</a>
+                    </p>
+                </div>
 
-<main class="container">
-    <article class="grid">
-        <section>
-            <hgroup>
-                <h1>Login</h1>
-                <p>Please enter your email and password to continue.</p>
-            </hgroup>
-            <form method="post" action="login.php">
-                <label for="email">
-                    Email address
-                    <input type="email" name="email" id="email" placeholder="Enter email" required>
-                </label>
-                <label for="password">
-                    Password
-                    <input type="password" name="password" id="password" placeholder="Enter password" required>
-                </label>
-                <button type="submit" name="submit" class="contrast">Submit</button>
-            </form>
-            <p style="color: red;">
-                <?php if (isset($error_msg)) echo $error_msg; ?>
-            </p>
-        </section>
-    </article>
-</main>
+                <?php if ($registration_success): ?>
+                    <div class="mt-6 rounded-md bg-green-900 p-4">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-green-200">Registration successful!</h3>
+                                <p class="mt-2 text-sm text-green-300">Please login with your credentials.</p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
+                <?php if (!empty($error)): ?>
+                    <div class="mt-6 rounded-md bg-red-900 p-4">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-200"><?php echo htmlspecialchars($error); ?></h3>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <form class="mt-8 space-y-6" method="POST">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-zinc-300">Email address</label>
+                            <div class="mt-1">
+                                <input id="email" name="email" type="email" required
+                                    class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
+                                    value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-zinc-300">Password</label>
+                            <div class="mt-1">
+                                <input id="password" name="password" type="password" required
+                                    class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember_me" name="remember_me" type="checkbox"
+                                class="h-4 w-4 rounded bg-zinc-700 border-zinc-600 text-blue-600 focus:ring-blue-500">
+                            <label for="remember_me" class="ml-2 block text-sm text-zinc-300">Remember me</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                            Sign in
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
