@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'db.php'; // Include your database connection
+require_once 'db.php'; 
 
 // Fetch notifications for the user
 $user_id = $_SESSION['user_id']; 
