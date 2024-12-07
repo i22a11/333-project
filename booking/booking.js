@@ -7,10 +7,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         const tableBody = document.getElementById('bookingsTableBody');
         // If there is an error (returned by the php), display the error message in the table
         if (data.error) {
-            tableBody.innerHTML = `<tr><td colspan="5">${data.error}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="5" class="border border-gray-300 px-4 py-2">${data.message}</td></tr>`;
             return;
         }
-        console.log(data);
         // If there is no error, display the bookings in the table
         tableBody.innerHTML = data.map(booking => `
             <tr>

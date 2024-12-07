@@ -34,7 +34,7 @@ function getAvailableTimeSlots($roomID, $date){
     $interval = 60 * 60; // 60 minutes interval
 
     // Get all the booked times for the room on the given date
-    $stmt = $pdo->prepare("SELECT time FROM Bookings WHERE room_id = :room_id AND date = :date");
+    $stmt = $pdo->prepare("SELECT time FROM Bookings WHERE room_id = :room_id AND date = :date AND status != 'cancelled'");
     $stmt->execute(['room_id' => $roomID, 'date' => $date]);
 
     $bookedTimes = $stmt->fetchAll(PDO::FETCH_ASSOC);

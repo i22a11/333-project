@@ -92,7 +92,7 @@
                 // Include different content based on the page value
                 switch ($page) {
                     case 'profile':
-                        include('profile.php');
+                        include('auth/profile.php');
                         break;
                     case 'room-browsing':
                         include('roomBrowsing/room_browsing.php');
