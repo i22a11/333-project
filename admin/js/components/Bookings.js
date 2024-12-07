@@ -56,16 +56,18 @@ export class Bookings extends HTMLElement {
    * @returns
    */
   getStatusBadgeClass(status) {
-    const baseClasses = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium";
+    console.log(status);
+    const baseClasses =
+      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset";
     switch (status) {
       case "pending":
-        return `${baseClasses} bg-yellow-50 text-yellow-800`;
+        return `${baseClasses} bg-yellow-50 text-yellow-800 ring-yellow-600/20`;
       case "confirmed":
-        return `${baseClasses} bg-green-50 text-green-800`;
+        return `${baseClasses} bg-green-50 text-green-800 ring-green-600/20`;
       case "cancelled":
-        return `${baseClasses} bg-red-50 text-red-800`;
+        return `${baseClasses} bg-red-50 text-red-800 ring-red-600/20`;
       default:
-        return `${baseClasses} bg-gray-50 text-gray-800`;
+        return `${baseClasses} bg-gray-50 text-gray-800 ring-gray-600/20`;
     }
   }
 
@@ -85,7 +87,7 @@ export class Bookings extends HTMLElement {
 
   render() {
     this.innerHTML = `
-            <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div class="relative overflow-hidden rounded-lg border bg-white shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full table-fixed divide-y divide-gray-200">
                         <thead>
@@ -98,7 +100,9 @@ export class Bookings extends HTMLElement {
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                            ${this.bookings.length === 0 ? `
+                            ${
+                              this.bookings.length === 0
+                                ? `
                               <tr>
                                 <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
                                   <div class="flex flex-col items-center justify-center space-y-2">
@@ -108,7 +112,10 @@ export class Bookings extends HTMLElement {
                                   </div>
                                 </td>
                               </tr>
-                            ` : this.bookings.map((booking) => `
+                            `
+                                : this.bookings
+                                    .map(
+                                      (booking) => `
                                 <tr class="hover:bg-gray-50 transition-colors duration-150">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
@@ -116,30 +123,48 @@ export class Bookings extends HTMLElement {
                                                 <i class="fas fa-user text-gray-500"></i>
                                             </div>
                                             <div class="ml-3">
-                                                <div class="text-sm font-medium text-gray-900">${booking.user_name}</div>
-                                                <div class="text-xs text-gray-500">${booking.user_email}</div>
+                                                <div class="text-sm font-medium text-gray-900">${
+                                                  booking.user_name
+                                                }</div>
+                                                <div class="text-xs text-gray-500">${
+                                                  booking.user_email
+                                                }</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
                                             <i class="fas fa-door-open text-gray-400 mr-2"></i>
-                                            <span class="text-sm text-gray-900">${booking.room_name}</span>
+                                            <span class="text-sm text-gray-900">${
+                                              booking.room_name
+                                            }</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
                                             <i class="fas fa-clock text-gray-400 mr-2"></i>
-                                            <span class="text-sm text-gray-900">${this.formatDateTime(booking.date, booking.time)}</span>
+                                            <span class="text-sm text-gray-900">${this.formatDateTime(
+                                              booking.date,
+                                              booking.time
+                                            )}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="${this.getStatusBadgeClass(booking.status)}">
-                                            ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                        <span class="${this.getStatusBadgeClass(
+                                          booking.status
+                                        )}">
+                                            ${
+                                              booking.status
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                              booking.status.slice(1)
+                                            }
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        ${booking.status === "pending" ? `
+                                        ${
+                                          booking.status === "pending"
+                                            ? `
                                             <div class="flex space-x-2">
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
@@ -156,10 +181,15 @@ export class Bookings extends HTMLElement {
                                                     Cancel
                                                 </button>
                                             </div>
-                                        ` : ""}
+                                        `
+                                            : ""
+                                        }
                                     </td>
                                 </tr>
-                            `).join("")}
+                            `
+                                    )
+                                    .join("")
+                            }
                         </tbody>
                     </table>
                 </div>

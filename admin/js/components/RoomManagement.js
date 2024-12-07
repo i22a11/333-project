@@ -108,9 +108,9 @@ export default class RoomManagement extends HTMLElement {
                     <thead>
                         <tr class="bg-gray-50">
                             <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Room Name</th>
-                            <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Capacity</th>
+                            <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Capacity</th>
                             <th scope="col" class="w-2/5 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Equipment</th>
-                            <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Actions</th>
+                            <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
@@ -230,13 +230,13 @@ export default class RoomManagement extends HTMLElement {
               <td class="max-w-xs truncate px-6 py-4">
                 <span class="font-medium text-gray-900">${room.name}</span>
               </td>
-              <td class="px-6 py-4">
-                <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700">
+              <td class="px-6 py-4 text-center">
+                <span class="inline-flex items-center justify-center rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700">
                   ${room.capacity} seats
                 </span>
               </td>
               <td class="max-w-sm truncate px-6 py-4 text-sm text-gray-500">${room.equipment}</td>
-              <td class="px-6 py-4 text-right text-sm">
+              <td class="px-6 py-4 text-center">
                   <button class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors mr-2" data-edit-room="${room.id}">
                     <i class="fas fa-edit mr-1.5 h-3.5 w-3.5"></i>
                     Edit
