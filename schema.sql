@@ -71,6 +71,19 @@ CREATE TABLE `Comments` (
 
 -- --------------------------------------------------------
 
+-- Table structure for table `Notifications`
+--
+
+CREATE TABLE `Notifications` (
+  `notification_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `message` TEXT NOT NULL,
+  `is_read` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`notification_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Table structure for table `Rooms`
 --
