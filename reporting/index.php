@@ -24,6 +24,7 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
     <title>333 Project Website!</title>
     <link rel="stylesheet" href="../output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
 </head>
 <body class="bg-zinc-900 text-zinc-100">
     <!-- Navigation -->
@@ -48,23 +49,19 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
 
         <!-- Main content -->
         <div class="px-4 py-6 sm:px-0 space-y-4">
-            <div>
-                <!-- Room Usage and Popularity -->
-                <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
-                    <div class="px-6 py-4 border-b border-zinc-700">
-                        <h2 class="text-xl font-semibold text-zinc-100">Room Usage and Popularity</h2>
-                    </div>
-                    <div class="p-6">
-                        <h1>_________________________</h1>
-                    </div>
+            <!-- Room Usage and Popularity Chart -->
+            <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700 h-[300px] w-[500px] mx-auto">
+                <div class="px-6 py-4 border-b border-zinc-700">
+                    <h2 class="text-xl font-semibold text-zinc-100">Room Usage and Popularity</h2>
+                </div>
+                <div class="p-6">
+                    <canvas id="myChart" class="w-full h-full" style="height: 170px;"></canvas>
                 </div>
             </div>
+            <script src="chart.js"></script>
             <div>
-                <!-- Your Content -->
+                <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Upcoming Bookings</h2>
                 <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
-                    <div class="px-6 py-4 border-b border-zinc-700">
-                        <h2 class="text-xl font-semibold text-zinc-100">Upcoming Bookings</h2>
-                    </div>
                     <div class="p-6">
                         <?php
                             foreach($upcomingBookings as $row => $booking){
@@ -83,11 +80,8 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                 </div>
             </div>
             <div>
-                <!-- Your Content -->
+                <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Past Bookings</h2>
                 <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
-                    <div class="px-6 py-4 border-b border-zinc-700">
-                        <h2 class="text-xl font-semibold text-zinc-100">Past Bookings</h2>
-                    </div>
                     <div class="p-6">
                         <?php
                             foreach($pastBookings as $row => $booking){
