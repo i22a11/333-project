@@ -68,9 +68,6 @@ try {
                     </div>
                 </div>
             </div>
-
-            <!-- Temprory to go to the base page -->
-            <a href="base.php" class="text-blue-500">Go to the base page</a>
         </div>
     </div>
 </body>
