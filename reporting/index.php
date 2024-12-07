@@ -59,6 +59,8 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                 </div>
             </div>
             <script src="chart.js"></script>
+            
+            <!-- Upcoming and Past Bookings -->
             <div class="flex flex-col md:flex-row space-x-4">
                 <div class="w-full md:w-1/2">
                     <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Upcoming Bookings</h2>
