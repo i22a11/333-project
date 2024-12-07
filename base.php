@@ -1,7 +1,7 @@
 <?php
     session_start();
     if (!isset($_SESSION['user_id'])) {
-        header("location: ./demo_login/demo_login.php");
+        header("location: ./auth/login.php");
         exit;
     }
 ?>
@@ -62,8 +62,10 @@
                 <span class="tooltip">Feedback</span>
             </li>
             <li class="profile">
-                <span class="text-white text-center">LOGOUT</span>
-                <i class='bx bx-log-out' id="logout"></i>
+                <a href="./auth/logout.php">
+                    <span class="text-white text-center">LOGOUT</span>
+                    <i class='bx bx-log-out' id="logout"></i>
+                </a>
             </li>
         </ul>
     </div>

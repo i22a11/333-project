@@ -3,12 +3,26 @@
 require '../db_connection.php';
 $pdo = db_connect();
 
-$roomID = 1;
-$date = '2021-07-01';
+session_start();
 
-echo getAvailableTimeSlots($roomID, $date);
+if (!isset($_SESSION['user_id'])) {
+    header("location: ../auth/login.php");
+    exit;
+}
 
-/*echo getAvailableTimeSlots($_POST['room_id'], $_POST['date']);*/
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (isset($data['room_id'], $data['date'])) {
+        $roomID = $data['room_id'];
+        $date = $data['date'];
+
+        echo getAvailableTimeSlots($roomID, $date);
+    } else {
+        echo json_encode(['error' => true, 'message' => 'Missing required parameters.']);
+    }
+    exit;
+}
 
 function getAvailableTimeSlots($roomID, $date){
     global $pdo;
@@ -24,8 +38,11 @@ function getAvailableTimeSlots($roomID, $date){
     $stmt->execute(['room_id' => $roomID, 'date' => $date]);
 
     $bookedTimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // Get only the time from the result and convert it to an array
-    $bookedTimes = array_column($bookedTimes, 'time');
+    // Get only the time from the result and convert it to an array and match it with the time format we want
+    $bookedTimes = array_map(function($booking) {
+        return date('H:i', strtotime($booking['time'])); // Format the database time to 'H:i'
+    }, $bookedTimes);
+    
 
     // Loop through the time slots and check if the time slot is available and add it 
     for($time = $start_time; $time <= $end_time; $time += $interval){

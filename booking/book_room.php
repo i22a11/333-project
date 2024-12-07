@@ -1,27 +1,39 @@
 <?php
     require '../db_connection.php';
     $pdo = db_connect();
+    session_start();
 
     // Check if the user is logged in, if not then redirect him to login page
-    if (isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
-        echo json_encode(getUserBookings($userId));
-    } else {
-        header("location: login.php");
+    if (!isset($_SESSION['user_id'])) {
+        header("location: ../auth/login.php");
         exit;
     }
 
     // Handle the form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $userID = $_SESSION['id'];
-        $roomID = $_POST['room_id'];
-        $date = $_POST['date'];
-        $time = $_POST['time'];
+        // Decode the json data received (since we are using javascript then the way to access the data is through php://input)
+        $data = json_decode(file_get_contents("php://input"), true);
 
-        $result = bookRoom($userID, $roomID, $date, $time, $pdo);
+        // Check if the required parameters are set
+        if (isset($data['room_id'], $data['booking_date'], $data['booking_time'])) {
+            $userID = $_SESSION['user_id'];
+            $roomID = $data['room_id'];
+            $date = $data['booking_date'];
+            $time = $data['booking_time'];
+    
+            // Change the time format to 24-hour format and extract the start time only (duration is fixed so we don't need an end time)
+            $splitTime = explode(' - ', $time);
+            $time = $splitTime[0];
+            $startTime = date('H:i', strtotime($time));
 
-        // Return the result as JSON to the javascript
-        echo json_encode($result);
+            // Call the booking function
+            $result = bookRoom($userID, $roomID, $date, $startTime, $pdo);
+    
+            // Return the result as JSON to the JavaScript
+            echo json_encode($result);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Missing required parameters.']);
+        }
         exit;
     }
 

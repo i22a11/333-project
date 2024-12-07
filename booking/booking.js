@@ -10,20 +10,21 @@ document.addEventListener('DOMContentLoaded', async function () {
             tableBody.innerHTML = `<tr><td colspan="5">${data.error}</td></tr>`;
             return;
         }
+        console.log(data);
         // If there is no error, display the bookings in the table
         tableBody.innerHTML = data.map(booking => `
             <tr>
-                <td>${booking.room_name}</td>
-                <td>${new Date(booking.start_time).toLocaleString()}</td>
-                <td>${new Date(booking.end_time).toLocaleString()}</td>
-                <td>${booking.status}</td>
-                <td>
-                    ${booking.status === 'confirmed' ? `<button class="cancelButton" data-booking-id="${booking.booking_id}">Cancel</button>` : 'N/A'}
+                <td class="border border-gray-300 px-4 py-2">${booking.room_name}</td>
+                <td class="border border-gray-300 px-4 py-2">${new Date(booking.date).toLocaleDateString()}</td>
+                <td class="border border-gray-300 px-4 py-2">${booking.time}</td>
+                <td class="border border-gray-300 px-4 py-2">${booking.status}</td>
+                <td class="border border-gray-300 px-4 py-2 text-center text-red-600 hover:text-red-800 cursor-pointer">
+                    <button class="cancelButton" data-booking-id="${booking.booking_id}">Cancel</button>
                 </td>
             </tr>
         `).join(''); // Here the map iterates over the bookings and for each one and create a row. The join('') is used to join the rows together.
     } catch (error) {
-        //console.error('Error fetching bookings:', error);
+        console.error('Error fetching bookings:', error);
     }
 });
 
@@ -96,7 +97,7 @@ document.getElementById('view-times-btn').addEventListener('click', async functi
         const data = await response.json();
 
         if (data.error) {
-            console.log(data.error);
+            console.log(data.message);
             return;
         }
 
@@ -128,6 +129,7 @@ document.getElementById('book-btn').addEventListener('click', async function () 
             body: JSON.stringify({ room_id: room, booking_date: date, booking_time: time }),
             headers: { 'Content-Type': 'application/json' }
         });
+
         const result = await response.json();
         alert(result.message);
 
@@ -138,6 +140,7 @@ document.getElementById('book-btn').addEventListener('click', async function () 
             location.reload(); // Refresh the table to show updated bookings
         }
     } catch (error) {
+        alert("Couldn't book the room at the moment. Please try again.");
         console.error('Error booking room:', error);
     }
 });
