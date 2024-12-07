@@ -59,43 +59,45 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                 </div>
             </div>
             <script src="chart.js"></script>
-            <div>
-                <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Upcoming Bookings</h2>
-                <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
-                    <div class="p-6">
-                        <?php
-                            foreach($upcomingBookings as $row => $booking){
-                                echo '<div class="flex justify-between items-center mb-4">';
-                                echo '<div>';
-                                echo '<h3 class="text-lg font-semibold">' . $booking['room_name'] . '</h3>';
-                                echo '<p class="text-sm text-zinc-400">' . $booking['date'] . ' ' . $booking['time'] . '</p>';
-                                echo '</div>';
-                                echo '<div>';
-                                /*echo '<a href="bookingDetails.php?booking_id=' . $booking['booking_id'] . '" class="text-blue-500 hover:text-blue-700">View Details</a>';*/
-                                echo '</div>';
-                                echo '</div>';
-                            }
-                        ?>
+            <div class="flex flex-col md:flex-row space-x-4">
+                <div class="w-full md:w-1/2">
+                    <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Upcoming Bookings</h2>
+                    <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
+                        <div class="p-6">
+                            <?php
+                                foreach($upcomingBookings as $row => $booking){
+                                    echo '<div class="flex justify-between items-center mb-4">';
+                                    echo '<div>';
+                                    echo '<h3 class="text-lg font-semibold">' . $booking['room_name'] . '</h3>';
+                                    echo '<p class="text-sm text-zinc-400">' . $booking['date'] . ' ' . $booking['time'] . '</p>';
+                                    echo '</div>';
+                                    echo '<div>';
+                                    /*echo '<a href="bookingDetails.php?booking_id=' . $booking['booking_id'] . '" class="text-blue-500 hover:text-blue-700">View Details</a>';*/
+                                    echo '</div>';
+                                    echo '</div>';
+                                }
+                            ?>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Past Bookings</h2>
-                <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
-                    <div class="p-6">
-                        <?php
-                            foreach($pastBookings as $row => $booking){
-                                echo '<div class="flex justify-between items-center mb-4">';
-                                echo '<div>';
-                                echo '<h3 class="text-lg font-semibold">' . $booking['room_name'] . '</h3>';
-                                echo '<p class="text-sm text-zinc-400">' . $booking['date'] . ' ' . $booking['time'] . '</p>';
-                                echo '</div>';
-                                echo '<div>';
-                                /*echo '<a href="bookingDetails.php?booking_id=' . $booking['booking_id'] . '" class="text-blue-500 hover:text-blue-700">View Details</a>';*/
-                                echo '</div>';
-                                echo '</div>';
-                            }
-                        ?>
+                <div class = "w-full md:w-1/2">
+                    <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Past Bookings</h2>
+                    <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
+                        <div class="p-6">
+                            <?php
+                                foreach($pastBookings as $row => $booking){
+                                    echo '<div class="flex justify-between items-center mb-4">';
+                                    echo '<div>';
+                                    echo '<h3 class="text-lg font-semibold">' . $booking['room_name'] . '</h3>';
+                                    echo '<p class="text-sm text-zinc-400">' . $booking['date'] . ' ' . $booking['time'] . '</p>';
+                                    echo '</div>';
+                                    echo '<div>';
+                                    /*echo '<a href="bookingDetails.php?booking_id=' . $booking['booking_id'] . '" class="text-blue-500 hover:text-blue-700">View Details</a>';*/
+                                    echo '</div>';
+                                    echo '</div>';
+                                }
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>
