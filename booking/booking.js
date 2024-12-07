@@ -1,7 +1,7 @@
 // Fetch user bookings when the page loads
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        const response = await fetch('./get_bookings.php'); // Fetch bookings from the php file
+        const response = await fetch('/booking/get_bookings.php'); // Fetch bookings from the php file
         const data = await response.json();
 
         const tableBody = document.getElementById('bookingsTableBody');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 //Fetch rooms when the page loads
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        const response = await fetch('./get_rooms.php'); // Fetch rooms from the php file
+        const response = await fetch("/booking/get_rooms.php"); // Fetch rooms from the php file
         const data = await response.json();
 
         const select = document.getElementById('room');
@@ -68,10 +68,10 @@ document.addEventListener('click', async function (event) {
         const bookingId = event.target.dataset.bookingId;
         // Send a request to the server to cancel the booking
         try {
-            const response = await fetch('./cancel_booking.php', {
-                method: 'POST',
-                body: JSON.stringify({ booking_id: bookingId }),
-                headers: { 'Content-Type': 'application/json' }
+            const response = await fetch("/booking/cancel_booking.php", {
+              method: "POST",
+              body: JSON.stringify({ booking_id: bookingId }),
+              headers: { "Content-Type": "application/json" },
             });
 
             const data = await response.json();
@@ -97,10 +97,11 @@ document.getElementById('view-times-btn').addEventListener('click', async functi
     }
 
     try {
-        const response = await fetch('./get_available_times.php', { // Replace with actual API endpoint
-            method: 'POST',
-            body: JSON.stringify({ room_id: room, date: date }),
-            headers: { 'Content-Type': 'application/json' }
+        const response = await fetch("/booking/get_available_times.php", {
+          // Replace with actual API endpoint
+          method: "POST",
+          body: JSON.stringify({ room_id: room, date: date }),
+          headers: { "Content-Type": "application/json" },
         });
         const data = await response.json();
 
@@ -134,10 +135,14 @@ document.getElementById('book-btn').addEventListener('click', async function () 
     }
 
     try {
-        const response = await fetch('./book_room.php', {
-            method: 'POST',
-            body: JSON.stringify({ room_id: room, booking_date: date, booking_time: time }),
-            headers: { 'Content-Type': 'application/json' }
+        const response = await fetch("/booking/book_room.php", {
+          method: "POST",
+          body: JSON.stringify({
+            room_id: room,
+            booking_date: date,
+            booking_time: time,
+          }),
+          headers: { "Content-Type": "application/json" },
         });
 
         const result = await response.json();

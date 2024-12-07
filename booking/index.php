@@ -130,17 +130,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body class="bg-zinc-900 text-zinc-100">
     <!-- Navigation -->
-    <nav class="bg-zinc-800 border-b border-zinc-700">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <span class="text-xl font-bold text-zinc-100">333 Project Website!</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php include '../components/navbar.php'; ?>
 
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Page header -->
@@ -220,5 +210,5 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 </body>
-<script src="./booking.js"></script>
+<script src="/booking/booking.js"></script>
 </html>

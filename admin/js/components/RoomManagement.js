@@ -140,10 +140,16 @@ export default class RoomManagement extends HTMLElement {
     this.container.innerHTML = `
       <div class="mb-6 flex items-center justify-between">
         <h2 class="text-xl font-bold text-zinc-100">Room Management</h2>
-        <button id="add-room-btn" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors duration-200">
+       <div class="flex items-center space-x-4">
+           <button id="add-room-btn" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors duration-200">
           <i class="fas fa-plus-circle mr-2 h-4 w-4"></i>
           Add Room
         </button>
+         <a href="/admin/bookings.php" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors duration-200">
+                        <i class="fas fa-calendar-alt mr-2 h-4 w-4"></i>
+                        Manage Bookings
+         </a>
+       </div>
       </div>
       <div class="relative overflow-hidden rounded-lg border border-zinc-700 bg-zinc-800 shadow-sm">
         <table class="w-full table-fixed divide-y divide-zinc-700">
@@ -157,7 +163,9 @@ export default class RoomManagement extends HTMLElement {
           </thead>
           <tbody class="divide-y divide-zinc-700 bg-zinc-800">
             ${this.rooms.map((room) => this.renderRoomRow(room)).join("")}
-            ${this.rooms.length === 0 ? `
+            ${
+              this.rooms.length === 0
+                ? `
               <tr>
                 <td colspan="4" class="px-6 py-8 text-center text-sm text-zinc-400">
                   <div class="flex flex-col items-center justify-center space-y-2">
@@ -167,7 +175,9 @@ export default class RoomManagement extends HTMLElement {
                   </div>
                 </td>
               </tr>
-            ` : ''}
+            `
+                : ""
+            }
           </tbody>
         </table>
       </div>
