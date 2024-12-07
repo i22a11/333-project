@@ -7,18 +7,27 @@ document.addEventListener('DOMContentLoaded', async function () {
         const tableBody = document.getElementById('bookingsTableBody');
         // If there is an error (returned by the php), display the error message in the table
         if (data.error) {
-            tableBody.innerHTML = `<tr><td colspan="5" class="border border-gray-300 px-4 py-2">${data.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="5" class="border border-zinc-700 px-4 py-2 text-zinc-300">${data.message}</td></tr>`;
             return;
         }
         // If there is no error, display the bookings in the table
         tableBody.innerHTML = data.map(booking => `
-            <tr>
-                <td class="border border-gray-300 px-4 py-2">${booking.room_name}</td>
-                <td class="border border-gray-300 px-4 py-2">${new Date(booking.date).toLocaleDateString()}</td>
-                <td class="border border-gray-300 px-4 py-2">${booking.time}</td>
-                <td class="border border-gray-300 px-4 py-2">${booking.status}</td>
-                <td class="border border-gray-300 px-4 py-2 text-center text-red-600 hover:text-red-800 cursor-pointer">
-                    <button class="cancelButton" data-booking-id="${booking.booking_id}">Cancel</button>
+            <tr class="hover:bg-zinc-800/50 transition-colors">
+                <td class="border border-zinc-700 px-4 py-2 text-zinc-100">${booking.room_name}</td>
+                <td class="border border-zinc-700 px-4 py-2 text-zinc-100">${new Date(booking.date).toLocaleDateString()}</td>
+                <td class="border border-zinc-700 px-4 py-2 text-zinc-100">${booking.time}</td>
+                <td class="border border-zinc-700 px-4 py-2">
+                    <span class="px-2 py-1 rounded-full text-sm ${
+                        booking.status === 'Pending' ? 'bg-yellow-900/50 text-yellow-400' :
+                        booking.status === 'Approved' ? 'bg-green-900/50 text-green-400' :
+                        'bg-red-900/50 text-red-400'
+                    }">${booking.status}</span>
+                </td>
+                <td class="border border-zinc-700 px-4 py-2 text-center">
+                    <button class="cancelButton bg-red-900/50 text-red-400 hover:bg-red-900/70 px-3 py-1 rounded transition-colors" 
+                            data-booking-id="${booking.booking_id}">
+                        Cancel
+                    </button>
                 </td>
             </tr>
         `).join(''); // Here the map iterates over the bookings and for each one and create a row. The join('') is used to join the rows together.
@@ -37,13 +46,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         // If there is an error (returned by the php), display the error message in the select
         if (data.error) {
             console.log(data.message);
-            select.innerHTML = `<option>No rooms were found..</option>`;
+            select.innerHTML = `<option class="text-zinc-400">No rooms were found..</option>`;
             return;
         }
 
         // If there is no error, display the rooms in the select
         select.innerHTML = data.map(room => `
-            <option value="${room.room_id}">${room.room_name}</option>
+            <option value="${room.room_id}" class="text-zinc-100 bg-zinc-800">${room.room_name}</option>
         `).join(''); // Here the map iterates over the rooms and for each one and create an option. The join('') is used to join the options together.
     } catch (error) {
         console.error('Error fetching rooms:', error);
@@ -101,7 +110,9 @@ document.getElementById('view-times-btn').addEventListener('click', async functi
         }
 
         const timeSelect = document.getElementById('time');
-        timeSelect.innerHTML = data.map(time => `<option value="${time}">${time}</option>`).join('');
+        timeSelect.innerHTML = data.map(time => `
+            <option value="${time}" class="text-zinc-100 bg-zinc-800">${time}</option>
+        `).join('');
 
         // Show the available times container and hide the "View Available Times" button
         document.getElementById('available-times-container').classList.remove('hidden');

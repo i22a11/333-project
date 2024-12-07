@@ -20,26 +20,26 @@ export default class StatsCard extends HTMLElement {
 
   render() {
     const colorClasses = {
-      blue: 'bg-blue-100 text-blue-500',
-      green: 'bg-green-100 text-green-500',
-      yellow: 'bg-yellow-100 text-yellow-500',
-      purple: 'bg-purple-100 text-purple-500'
+      blue: 'bg-blue-900/50 text-blue-400',
+      green: 'bg-green-900/50 text-green-400',
+      yellow: 'bg-yellow-900/50 text-yellow-400',
+      purple: 'bg-purple-900/50 text-purple-400'
     };
 
     // @ts-ignore
     const colorClass = colorClasses[this.color] || colorClasses.blue;
 
     return `
-      <div class="bg-white rounded-lg p-6 shadow-sm">
+      <div class="bg-zinc-800 rounded-lg p-6 shadow-sm border border-zinc-700">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center">
             <div class="rounded-full w-12 h-12 flex items-center justify-center ${colorClass}">
               <i class="${this.icon} text-xl"></i>
             </div>
-            <h3 class="ml-4 text-lg font-semibold text-gray-700">${this.title}</h3>
+            <h3 class="ml-4 text-lg font-semibold text-zinc-100">${this.title}</h3>
           </div>
         </div>
-        <div class="text-3xl font-bold text-gray-900">${this.value}</div>
+        <div class="text-3xl font-bold text-zinc-100">${this.value}</div>
       </div>
     `;
   }

@@ -20,12 +20,16 @@ export default class CustomDialog extends HTMLElement {
         :host {
           --primary-color: #2563eb;
           --primary-hover: #1d4ed8;
+          --bg-color: #18181b;
+          --border-color: #3f3f46;
+          --text-primary: #fafafa;
+          --text-secondary: #a1a1aa;
         }
 
         .dialog-overlay {
           position: fixed;
           inset: 0;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.7);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -42,9 +46,10 @@ export default class CustomDialog extends HTMLElement {
         }
 
         .dialog-content {
-          background-color: white;
+          background-color: var(--bg-color);
+          border: 1px solid var(--border-color);
           border-radius: 0.5rem;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
           width: 100%;
           max-width: 28rem;
           position: relative;
@@ -65,10 +70,15 @@ export default class CustomDialog extends HTMLElement {
           cursor: pointer;
           opacity: 0.7;
           transition: opacity 0.2s;
+          color: var(--text-secondary);
+          padding: 0.5rem;
+          border-radius: 0.375rem;
         }
 
         .dialog-close:hover {
           opacity: 1;
+          color: var(--text-primary);
+          background-color: rgba(63, 63, 70, 0.5);
         }
 
         .dialog-header {
@@ -80,23 +90,24 @@ export default class CustomDialog extends HTMLElement {
           margin: 0;
           font-size: 1.125rem;
           font-weight: 600;
+          color: var(--text-primary);
         }
 
         .dialog-description {
           margin: 0.5rem 0 0;
           font-size: 0.875rem;
-          color: #6b7280;
+          color: var(--text-secondary);
         }
 
         .dialog-body {
           padding: 0 1.5rem;
+          color: var(--text-primary);
         }
 
         .dialog-footer {
           display: flex;
-          flex-direction: column-reverse;
+          justify-content: flex-end;
           padding: 1.5rem;
-          gap: 0.5rem;
         }
 
         .button {
@@ -107,18 +118,8 @@ export default class CustomDialog extends HTMLElement {
           font-size: 0.875rem;
           font-weight: 500;
           padding: 0.5rem 1rem;
-          transition: background-color 0.2s, color 0.2s;
+          transition: all 0.2s;
           cursor: pointer;
-        }
-
-        .button-secondary {
-          background-color: white;
-          border: 1px solid #d1d5db;
-          color: #374151;
-        }
-
-        .button-secondary:hover {
-          background-color: #f3f4f6;
         }
 
         .button-primary {
@@ -135,11 +136,38 @@ export default class CustomDialog extends HTMLElement {
           .dialog-header {
             text-align: left;
           }
+        }
 
-          .dialog-footer {
-            flex-direction: row;
-            justify-content: flex-end;
-          }
+        /* Dark mode form styles */
+        ::slotted(form) {
+          color: var(--text-primary);
+        }
+
+        ::slotted(input),
+        ::slotted(select),
+        ::slotted(textarea) {
+          background-color: rgba(63, 63, 70, 0.3);
+          border: 1px solid var(--border-color);
+          color: var(--text-primary);
+          border-radius: 0.375rem;
+          padding: 0.5rem 0.75rem;
+          width: 100%;
+          transition: all 0.2s;
+        }
+
+        ::slotted(input:focus),
+        ::slotted(select:focus),
+        ::slotted(textarea:focus) {
+          border-color: var(--primary-color);
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        ::slotted(label) {
+          color: var(--text-secondary);
+          font-size: 0.875rem;
+          margin-bottom: 0.5rem;
+          display: block;
         }
       </style>
       <div class="dialog-overlay" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
@@ -158,7 +186,6 @@ export default class CustomDialog extends HTMLElement {
             <slot></slot>
           </div>
           <div class="dialog-footer">
-            <slot name="cancel"></slot>
             <slot name="confirm"></slot>
           </div>
         </div>
@@ -189,19 +216,6 @@ export default class CustomDialog extends HTMLElement {
       });
     }
 
-    // Handle cancel button slot
-    const cancelSlot = this.shadowRoot.querySelector('slot[name="cancel"]');
-    if (cancelSlot) {
-      cancelSlot.addEventListener("slotchange", (e) => {
-        const elements = e.target.assignedElements();
-        if (elements.length > 0) {
-          const cancelBtn = elements[0];
-          cancelBtn.classList.add("button", "button-secondary");
-          cancelBtn.addEventListener("click", () => this.close());
-        }
-      });
-    }
-
     // Handle confirm button slot
     const confirmSlot = this.shadowRoot.querySelector('slot[name="confirm"]');
     if (confirmSlot) {
@@ -210,6 +224,10 @@ export default class CustomDialog extends HTMLElement {
         if (elements.length > 0) {
           const confirmBtn = elements[0];
           confirmBtn.classList.add("button", "button-primary");
+          confirmBtn.addEventListener("click", () => {
+            this.dispatchEvent(new CustomEvent("confirm"));
+            this.close();
+          });
         }
       });
     }
@@ -228,15 +246,7 @@ export default class CustomDialog extends HTMLElement {
     if (overlay) {
       overlay.classList.remove("active");
       this.isOpen = false;
-      this.dispatchEvent(new CustomEvent("dialog-close"));
-    }
-  }
-
-  toggle() {
-    if (this.isOpen) {
-      this.close();
-    } else {
-      this.open();
+      this.dispatchEvent(new CustomEvent("close"));
     }
   }
 }

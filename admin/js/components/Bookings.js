@@ -58,16 +58,16 @@ export class Bookings extends HTMLElement {
   getStatusBadgeClass(status) {
     console.log(status);
     const baseClasses =
-      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset";
+      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium";
     switch (status) {
       case "pending":
-        return `${baseClasses} bg-yellow-50 text-yellow-800 ring-yellow-600/20`;
+        return `${baseClasses} bg-yellow-900/50 text-yellow-400`;
       case "confirmed":
-        return `${baseClasses} bg-green-50 text-green-800 ring-green-600/20`;
+        return `${baseClasses} bg-green-900/50 text-green-400`;
       case "cancelled":
-        return `${baseClasses} bg-red-50 text-red-800 ring-red-600/20`;
+        return `${baseClasses} bg-red-900/50 text-red-400`;
       default:
-        return `${baseClasses} bg-gray-50 text-gray-800 ring-gray-600/20`;
+        return `${baseClasses} bg-zinc-800/50 text-zinc-400`;
     }
   }
 
@@ -87,28 +87,28 @@ export class Bookings extends HTMLElement {
 
   render() {
     this.innerHTML = `
-            <div class="relative overflow-hidden rounded-lg border bg-white shadow-sm">
+            <div class="relative overflow-hidden rounded-lg border border-zinc-700 bg-zinc-800 shadow-sm">
                 <div class="overflow-x-auto">
-                    <table class="w-full table-fixed divide-y divide-gray-200">
+                    <table class="w-full table-fixed divide-y divide-zinc-700">
                         <thead>
-                            <tr class="bg-gray-50">
-                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">User</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Room</th>
-                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Date & Time</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Status</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Actions</th>
+                            <tr class="bg-zinc-800/50">
+                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">User</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Room</th>
+                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Date & Time</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Status</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
+                        <tbody class="divide-y divide-zinc-700 bg-zinc-800">
                             ${
                               this.bookings.length === 0
                                 ? `
                               <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
+                                <td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-400">
                                   <div class="flex flex-col items-center justify-center space-y-2">
-                                    <i class="fas fa-calendar-times text-gray-400 text-4xl mb-2"></i>
+                                    <i class="fas fa-calendar-times text-zinc-500 text-4xl mb-2"></i>
                                     <p>No bookings available</p>
-                                    <p class="text-xs text-gray-400">Bookings will appear here when users make reservations</p>
+                                    <p class="text-xs text-zinc-500">Bookings will appear here when users make reservations</p>
                                   </div>
                                 </td>
                               </tr>
@@ -116,17 +116,17 @@ export class Bookings extends HTMLElement {
                                 : this.bookings
                                     .map(
                                       (booking) => `
-                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <tr class="hover:bg-zinc-700/30 transition-colors duration-150">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <div class="h-8 w-8 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center">
-                                                <i class="fas fa-user text-gray-500"></i>
+                                            <div class="h-8 w-8 flex-shrink-0 rounded-full bg-zinc-700/50 flex items-center justify-center">
+                                                <i class="fas fa-user text-zinc-400"></i>
                                             </div>
                                             <div class="ml-3">
-                                                <div class="text-sm font-medium text-gray-900">${
+                                                <div class="text-sm font-medium text-zinc-100">${
                                                   booking.user_name
                                                 }</div>
-                                                <div class="text-xs text-gray-500">${
+                                                <div class="text-xs text-zinc-400">${
                                                   booking.user_email
                                                 }</div>
                                             </div>
@@ -134,16 +134,16 @@ export class Bookings extends HTMLElement {
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <i class="fas fa-door-open text-gray-400 mr-2"></i>
-                                            <span class="text-sm text-gray-900">${
+                                            <i class="fas fa-door-open text-blue-400 mr-2"></i>
+                                            <span class="text-sm text-zinc-100">${
                                               booking.room_name
                                             }</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <i class="fas fa-clock text-gray-400 mr-2"></i>
-                                            <span class="text-sm text-gray-900">${this.formatDateTime(
+                                            <i class="fas fa-clock text-blue-400 mr-2"></i>
+                                            <span class="text-sm text-zinc-100">${this.formatDateTime(
                                               booking.date,
                                               booking.time
                                             )}</span>
@@ -169,14 +169,14 @@ export class Bookings extends HTMLElement {
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
                                                     data-action="confirm"
-                                                    class="inline-flex items-center rounded-md bg-green-50 px-2.5 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                                                    class="inline-flex items-center rounded-md bg-green-900/50 px-2.5 py-1.5 text-sm font-medium text-green-400 hover:bg-green-900/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
                                                     <i class="fas fa-check mr-1.5 h-3.5 w-3.5"></i>
                                                     Confirm
                                                 </button>
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
                                                     data-action="cancel"
-                                                    class="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                                                    class="inline-flex items-center rounded-md bg-red-900/50 px-2.5 py-1.5 text-sm font-medium text-red-400 hover:bg-red-900/70 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
                                                     <i class="fas fa-times mr-1.5 h-3.5 w-3.5"></i>
                                                     Cancel
                                                 </button>
