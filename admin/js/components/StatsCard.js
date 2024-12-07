@@ -1,70 +1,47 @@
 export default class StatsCard extends HTMLElement {
   /**
-   *
-   * @param {string} icon
-   * @param {string} title
-   * @param {string} value
-   * @param {string} color
+   * @param {Object} options
+   * @param {string} options.icon - Icon class name
+   * @param {string} options.title - Card title
+   * @param {number|string} options.value - Card value
+   * @param {string} options.color - Color theme for the card
    */
-  constructor(icon, title, value, color) {
+  constructor(options) {
     super();
-    this.icon = icon;
-    this.title = title;
-    this.value = value;
-    this.color = color;
+    this.icon = options.icon;
+    this.title = options.title;
+    this.value = options.value;
+    this.color = options.color;
   }
 
-  getIconColorClass() {
-    switch (this.color) {
-      case 'blue':
-        return 'bg-blue-50 text-blue-600';
-      case 'green':
-        return 'bg-green-50 text-green-600';
-      case 'yellow':
-        return 'bg-yellow-50 text-yellow-600';
-      case 'indigo':
-        return 'bg-indigo-50 text-indigo-600';
-      default:
-        return 'bg-gray-50 text-gray-600';
-    }
-  }
-
-  getValueColorClass() {
-    switch (this.color) {
-      case 'blue':
-        return 'text-blue-600';
-      case 'green':
-        return 'text-green-600';
-      case 'yellow':
-        return 'text-yellow-600';
-      case 'indigo':
-        return 'text-indigo-600';
-      default:
-        return 'text-gray-600';
-    }
+  connectedCallback() {
+    this.innerHTML = this.render();
   }
 
   render() {
+    const colorClasses = {
+      blue: 'bg-blue-100 text-blue-500',
+      green: 'bg-green-100 text-green-500',
+      yellow: 'bg-yellow-100 text-yellow-500',
+      purple: 'bg-purple-100 text-purple-500'
+    };
+
+    // @ts-ignore
+    const colorClass = colorClasses[this.color] || colorClasses.blue;
+
     return `
-            <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-lg ${this.getIconColorClass()}">
-                            <!-- <i class="${this.icon} text-xl"></i> -->
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">${this.title}</p>
-                            <h3 class="mt-1 text-2xl font-bold ${this.getValueColorClass()}">${this.value}</h3>
-                        </div>
-                    </div>
-                    <div class="absolute bottom-0 right-0 h-24 w-24 transform translate-x-6 translate-y-6">
-                        <div class="absolute inset-0 ${this.getIconColorClass()} opacity-10">
-                            <i class="${this.icon} text-6xl transform -rotate-12"></i>
-                        </div>
-                    </div>
-                </div>
+      <div class="bg-white rounded-lg p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center">
+            <div class="rounded-full w-12 h-12 flex items-center justify-center ${colorClass}">
+              <i class="${this.icon} text-xl"></i>
             </div>
-        `;
+            <h3 class="ml-4 text-lg font-semibold text-gray-700">${this.title}</h3>
+          </div>
+        </div>
+        <div class="text-3xl font-bold text-gray-900">${this.value}</div>
+      </div>
+    `;
   }
 }
 
