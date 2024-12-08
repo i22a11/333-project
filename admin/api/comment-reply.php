@@ -1,6 +1,6 @@
 <?php
 require_once '../../db_connection.php';
-require_once '../../base.php';
+require_once '../../utils.php';
 
 // Start session and check admin privileges
 session_start();

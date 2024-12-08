@@ -55,11 +55,21 @@ export default class RoomManagement extends HTMLElement {
             const nameInput = form.querySelector('#edit-room-name');
             const capacityInput = form.querySelector('#edit-room-capacity');
             const equipmentInput = form.querySelector('#edit-room-equipment');
+            const imagePreview = document.getElementById('edit-image-preview');
+            const previewImg = imagePreview?.querySelector('img');
 
             if (idInput) idInput.value = room.id;
             if (nameInput) nameInput.value = room.name;
             if (capacityInput) capacityInput.value = room.capacity;
             if (equipmentInput) equipmentInput.value = room.equipment;
+
+            // Show current image if it exists
+            if (imagePreview && previewImg && room.image_url) {
+              previewImg.src = room.image_url;
+              imagePreview.classList.remove('hidden');
+            } else if (imagePreview) {
+              imagePreview.classList.add('hidden');
+            }
           }
           editRoomDialog?.open();
         });
@@ -80,6 +90,25 @@ export default class RoomManagement extends HTMLElement {
         editRoomDialog?.close();
         // Refresh the page to show updated data
         window.location.reload();
+      });
+    }
+
+    // Handle image upload preview
+    const imageInput = document.getElementById('edit-room-image');
+    const imagePreview = document.getElementById('edit-image-preview');
+    if (imageInput && imagePreview) {
+      imageInput.addEventListener('change', () => {
+        const file = imageInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            imagePreview.querySelector('img').src = reader.result;
+            imagePreview.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.classList.add('hidden');
+        }
       });
     }
   }
@@ -186,26 +215,70 @@ export default class RoomManagement extends HTMLElement {
       <custom-dialog id="edit-room-dialog" title="Edit Room" description="Update room details">
         <form id="edit-room-form" class="space-y-4">
           <input type="hidden" name="id" id="edit-room-id">
-          <div>
-            <label for="edit-room-name" class="block text-sm font-medium text-zinc-300">Room Name</label>
-            <input type="text" id="edit-room-name" name="name" 
-              class="mt-1 block w-full rounded-md bg-zinc-700 border-zinc-600 px-4 py-3 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="edit-room-name" class="block text-sm font-medium text-zinc-300">Room Name</label>
+              <div class="mt-1">
+                <input type="text" id="edit-room-name" name="name" required
+                  class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2"
+                  placeholder="Enter room name">
+              </div>
+            </div>
+
+            <div>
+              <label for="edit-room-capacity" class="block text-sm font-medium text-zinc-300">Capacity</label>
+              <div class="mt-1">
+                <input type="number" id="edit-room-capacity" name="capacity" required min="1"
+                  class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2"
+                  placeholder="Enter room capacity">
+              </div>
+            </div>
           </div>
-          <div>
-            <label for="edit-room-capacity" class="block text-sm font-medium text-zinc-300">Capacity</label>
-            <input type="number" id="edit-room-capacity" name="capacity" min="1" 
-              class="mt-1 block w-full rounded-md bg-zinc-700 border-zinc-600 px-4 py-3 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
-          </div>
+
           <div>
             <label for="edit-room-equipment" class="block text-sm font-medium text-zinc-300">Equipment</label>
-            <input type="text" id="edit-room-equipment" name="equipment" 
-              class="mt-1 block w-full rounded-md bg-zinc-700 border-zinc-600 px-4 py-3 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+            <div class="mt-1">
+              <textarea id="edit-room-equipment" name="equipment" rows="2" required
+                class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2"
+                placeholder="List room equipment..."></textarea>
+            </div>
+          </div>
+
+          <div>
+            <label for="edit-room-image" class="block text-sm font-medium text-zinc-300">Room Image</label>
+            <div class="mt-1 flex justify-center rounded-lg border border-dashed border-zinc-600 px-4 py-4 hover:border-zinc-400 transition-colors">
+              <div class="text-center">
+                <div id="edit-image-preview" class="hidden mb-3">
+                  <img src="" alt="Preview" class="mx-auto h-24 w-auto rounded-lg object-cover">
+                </div>
+                <div class="space-y-1">
+                  <svg class="mx-auto h-8 w-8 text-zinc-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <div class="flex justify-center text-sm">
+                    <label for="edit-room-image"
+                      class="relative cursor-pointer rounded-md bg-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <span>Upload a file</span>
+                      <input id="edit-room-image" name="image" type="file" class="sr-only" accept="image/*">
+                    </label>
+                  </div>
+                  <p class="text-xs text-zinc-400">PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" onclick="this.closest('custom-dialog').close()"
+              class="inline-flex justify-center rounded-md border border-transparent bg-zinc-600 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              Cancel
+            </button>
+            <button type="submit"
+              class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              Save Changes
+            </button>
           </div>
         </form>
-        <button slot="confirm" type="submit" 
-          class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-800">
-          Save Changes
-        </button>
       </custom-dialog>
     `;
 

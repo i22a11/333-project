@@ -92,11 +92,11 @@ export class Bookings extends HTMLElement {
                     <table class="w-full table-fixed divide-y divide-zinc-700">
                         <thead>
                             <tr class="bg-zinc-800/50">
-                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">User</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Room</th>
-                                <th scope="col" class="w-1/4 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Date & Time</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Status</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Actions</th>
+                                <th scope="col" class="w-1/4 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">User</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Room</th>
+                                <th scope="col" class="w-1/4 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Date & Time</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Status</th>
+                                <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-700 bg-zinc-800">
@@ -140,8 +140,8 @@ export class Bookings extends HTMLElement {
                                             }</span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center">
                                             <i class="fas fa-clock text-blue-400 mr-2"></i>
                                             <span class="text-sm text-zinc-100">${this.formatDateTime(
                                               booking.date,
@@ -149,7 +149,7 @@ export class Bookings extends HTMLElement {
                                             )}</span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-4 text-center">
                                         <span class="${this.getStatusBadgeClass(
                                           booking.status
                                         )}">
@@ -161,28 +161,26 @@ export class Bookings extends HTMLElement {
                                             }
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-4 text-center">
                                         ${
                                           booking.status === "pending"
                                             ? `
-                                            <div class="flex space-x-2">
+                                            <div class="inline-flex -space-x-px">
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
                                                     data-action="confirm"
-                                                    class="inline-flex items-center rounded-md bg-green-900/50 px-2.5 py-1.5 text-sm font-medium text-green-400 hover:bg-green-900/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
-                                                    <i class="fas fa-check mr-1.5 h-3.5 w-3.5"></i>
-                                                    Confirm
+                                                    class="inline-flex items-center rounded-l-md bg-green-900/50 px-2.5 py-1.5 text-sm font-medium text-green-400 hover:bg-green-900/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
+                                                    <i class="fas fa-check h-3.5 w-3.5"></i>
                                                 </button>
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
                                                     data-action="cancel"
-                                                    class="inline-flex items-center rounded-md bg-red-900/50 px-2.5 py-1.5 text-sm font-medium text-red-400 hover:bg-red-900/70 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
-                                                    <i class="fas fa-times mr-1.5 h-3.5 w-3.5"></i>
-                                                    Cancel
+                                                    class="inline-flex items-center rounded-r-md bg-red-900/50 px-2.5 py-1.5 text-sm font-medium text-red-400 hover:bg-red-900/70 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
+                                                    <i class="fas fa-times h-3.5 w-3.5"></i>
                                                 </button>
                                             </div>
-                                        `
-                                            : ""
+                                            `
+                                            : "-"
                                         }
                                     </td>
                                 </tr>
