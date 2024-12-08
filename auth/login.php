@@ -12,14 +12,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $conn = db_connect();
-            $stmt = $conn->prepare("SELECT user_id, name, password, role FROM Users WHERE email = ?");
+            
+            // Debug: Log the query and email
+            error_log('Login attempt for email: ' . $email);
+            
+            $stmt = $conn->prepare("SELECT user_id, name, password, role, avatar_url FROM Users WHERE email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Debug: Log user data
+            error_log('User data from DB: ' . print_r($user, true));
 
             if ($user && password_verify($password, $user['password'])) {
+                // Clear any existing session data
+                session_unset();
+                
+                // Set new session data
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['user_role'] = $user['role'];  
+                $_SESSION['avatar_url'] = $user['avatar_url'] ?? '../uploads/avatars/default.png';
+                
+                // Debug: Log the session data after setting
+                error_log('Session data after login: ' . print_r($_SESSION, true));
 
                 if ($user['role'] === 'admin') {
                     header("Location: ../admin/");
@@ -31,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Invalid email or password";
             }
         } catch(PDOException $e) {
+            error_log('Database error during login: ' . $e->getMessage());
             $error = "Database error: " . $e->getMessage();
         }
     }

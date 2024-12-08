@@ -33,11 +33,11 @@ export const addRoom = async (formContainer) => {
 
     try {
       let imageUrl = null;
+      const submitButton = formContainer.querySelector('button[type="submit"]');
       
       // Upload image if one is selected
       if (imageFile) {
         try {
-          const submitButton = formContainer.querySelector('button[type="submit"]');
           if (submitButton) {
             submitButton.disabled = true;
             submitButton.textContent = 'Uploading...';
@@ -48,34 +48,44 @@ export const addRoom = async (formContainer) => {
           console.error("Error uploading image:", error);
           alert("Failed to upload image. Please try again.");
           return;
-        } finally {
-          const submitButton = formContainer.querySelector('button[type="submit"]');
-          if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Add Room';
-          }
         }
       }
 
-      // Create room with image URL if available
-      await InvokeCreateRoom(name, capacity, equipment, imageUrl);
-      alert("Room added successfully!");
+      // Create room with image URL
+      if (submitButton) {
+        submitButton.textContent = 'Creating Room...';
+      }
 
-      dialog.close();
-      formContainer.reset();
-      
-      // Reset image preview
-      const imagePreview = document.getElementById('image-preview');
-      if (imagePreview) {
-        imagePreview.classList.add('hidden');
-        const previewImg = imagePreview.querySelector('img');
-        if (previewImg) {
-          previewImg.src = '';
+      const response = await InvokeCreateRoom({
+        name,
+        capacity,
+        equipment,
+        image_url: imageUrl
+      });
+
+      if (response.success) {
+        // Reset form and close dialog
+        formContainer.reset();
+        const preview = document.getElementById('image-preview');
+        if (preview) {
+          preview.classList.add('hidden');
         }
+        dialog.close();
+        
+        // Reload the page to show the new room
+        window.location.reload();
+      } else {
+        throw new Error(response.message || "Failed to create room");
       }
     } catch (error) {
-      console.error("Error adding room:", error);
-      alert("Failed to add room. Please try again.");
+      console.error("Error:", error);
+      alert(error.message || "An error occurred. Please try again.");
+    } finally {
+      const submitButton = formContainer.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Add Room';
+      }
     }
   }
 };

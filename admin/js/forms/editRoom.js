@@ -15,12 +15,18 @@ export const editRoom = async (form, currentRoom) => {
   const capacityValue = formData.get("capacity");
   const equipmentValue = formData.get("equipment");
   // @ts-ignore
-  const imageFile = form.querySelector('#room-image')?.files[0];
+  const imageFile = form.querySelector('#edit-room-image')?.files[0];
 
   // Validate and convert form values
-  const name = typeof nameValue === "string" ? nameValue : "";
-  const capacity = capacityValue ? parseInt(String(capacityValue)) : 0;
-  const equipment = typeof equipmentValue === "string" ? equipmentValue : "";
+  const name = typeof nameValue === "string" ? nameValue.trim() : "";
+  const capacity = capacityValue ? parseInt(String(capacityValue), 10) : 0;
+  const equipment = typeof equipmentValue === "string" ? equipmentValue.trim() : "";
+
+  // Validate required fields
+  if (!name || !capacity || !equipment) {
+    alert("Please fill in all required fields");
+    return;
+  }
 
   let image_url = currentRoom.image_url;
 
@@ -31,10 +37,12 @@ export const editRoom = async (form, currentRoom) => {
       if (submitButton) {
         // @ts-ignore
         submitButton.disabled = true;
-        submitButton.textContent = 'Uploading...';
+        submitButton.textContent = 'Uploading Image...';
       }
 
+      console.log('Uploading image file:', imageFile);
       image_url = await uploadFileToSupabase(imageFile);
+      console.log('Uploaded image URL:', image_url);
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Failed to upload image. Please try again.");
@@ -49,26 +57,48 @@ export const editRoom = async (form, currentRoom) => {
     }
   }
 
+  // Ensure room ID is a number
   const room = {
-    id: currentRoom.id,
+    id: parseInt(String(currentRoom.id), 10),
     name,
     capacity,
     equipment,
     image_url
   };
 
-  await InvokeEditRoom(room);
-  
-  // Reset image preview
-  const imagePreview = document.getElementById('image-preview');
-  if (imagePreview) {
-    imagePreview.classList.add('hidden');
-    const previewImg = imagePreview.querySelector('img');
-    if (previewImg) {
-      previewImg.src = '';
+  console.log("Sending room data:", room); // Debug log
+
+  try {
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      // @ts-ignore
+      submitButton.disabled = true;
+      submitButton.textContent = 'Saving...';
+    }
+
+    // @ts-ignore
+    await InvokeEditRoom(room);
+    
+    // Reset image preview
+    const imagePreview = document.getElementById('edit-image-preview');
+    if (imagePreview) {
+      imagePreview.classList.add('hidden');
+      const previewImg = imagePreview.querySelector('img');
+      if (previewImg) {
+        previewImg.src = '';
+      }
+    }
+
+    // Refresh the page to show updated data
+    window.location.reload();
+  } catch (error) {
+    console.error("Error updating room:", error);
+    alert("Failed to update room. Please try again.");
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      // @ts-ignore
+      submitButton.disabled = false;
+      submitButton.textContent = 'Save Changes';
     }
   }
-
-  // Refresh the page to show updated data
-  window.location.reload();
 };

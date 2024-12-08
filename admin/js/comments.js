@@ -45,22 +45,14 @@ function createCommentElement(comment) {
     div.appendChild(header);
     div.appendChild(content);
 
-    // Add replies section if there are any
-    if (comment.replies && comment.replies.length > 0) {
-        const repliesSection = document.createElement('div');
-        repliesSection.className = 'mt-4 space-y-2 pl-4 border-l-2 border-zinc-600';
-        
-        comment.replies.forEach(reply => {
-            const replyElement = document.createElement('div');
-            replyElement.className = 'text-sm';
-            replyElement.innerHTML = `
-                <div class="text-zinc-400 text-xs">Reply from ${escapeHtml(reply.admin_name)} - ${new Date(reply.created_at).toLocaleString()}</div>
-                <div class="text-zinc-200 mt-1">${escapeHtml(reply.reply)}</div>
-            `;
-            repliesSection.appendChild(replyElement);
-        });
-
-        div.appendChild(repliesSection);
+    if (comment.admin_response) {
+        const replySection = document.createElement('div');
+        replySection.className = 'mt-4 pl-4 border-l-2 border-indigo-500';
+        replySection.innerHTML = `
+            <div class="text-xs text-indigo-400">Admin Response:</div>
+            <div class="text-sm text-zinc-200 mt-1">${escapeHtml(comment.admin_response)}</div>
+        `;
+        div.appendChild(replySection);
     }
 
     return div;
@@ -69,7 +61,7 @@ function createCommentElement(comment) {
 // Function to handle reply submission
 async function submitReply(commentId, replyText) {
     try {
-        const response = await fetch('/admin/api/comment-reply.php', {
+        const response = await fetch('/admin/api/reply.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -81,13 +73,19 @@ async function submitReply(commentId, replyText) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to submit reply');
+            throw new Error('Network response was not ok');
         }
 
-        // Reload comments to show the new reply
-        loadComments();
+        const result = await response.json();
+        if (result.success) {
+            // Reload comments to show the new reply
+            loadComments();
+            return true;
+        }
+        return false;
     } catch (error) {
         console.error('Error submitting reply:', error);
+        return false;
     }
 }
 
@@ -112,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const commentId = e.target.dataset.commentId;
             const dialog = document.getElementById('reply-comment-dialog');
             document.getElementById('comment-id').value = commentId;
-            dialog.showModal();
+            dialog.open();
         }
     });
 
@@ -122,10 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const commentId = document.getElementById('comment-id').value;
         const replyText = document.getElementById('reply-text').value;
         
-        await submitReply(commentId, replyText);
-        
-        // Close dialog and reset form
-        document.getElementById('reply-comment-dialog').close();
-        document.getElementById('reply-comment-form').reset();
+        if (replyText.trim()) {
+            const success = await submitReply(commentId, replyText);
+            if (success) {
+                document.getElementById('reply-comment-dialog').close();
+                document.getElementById('reply-comment-form').reset();
+            }
+        }
     });
 });

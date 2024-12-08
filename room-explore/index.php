@@ -2,203 +2,331 @@
 require_once '../db_connection.php';
 session_start();
 
-// Fetch all rooms from the database
-$conn = db_connect();
-$stmt = $conn->prepare("SELECT * FROM Rooms");
-$stmt->execute();
-$rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Function to fetch comments for a room
-function getCommentsForRoom($roomId) {
+// Mark notifications as read when user visits room-explore
+if (isset($_SESSION['user_id'])) {
     $conn = db_connect();
     $stmt = $conn->prepare("
-        SELECT c.comment_id, c.comment, c.created_at, c.admin_response, c.is_resolved,
-               u.name as user_name,
-               a.name as admin_name
-        FROM Comments c 
-        JOIN Users u ON c.user_id = u.user_id 
-        LEFT JOIN Users a ON c.admin_id = a.user_id 
-        WHERE c.room_id = ? 
-        ORDER BY c.created_at DESC
+        UPDATE Notifications 
+        SET is_read = TRUE 
+        WHERE user_id = ? AND is_read = FALSE
     ");
-    $stmt->execute([$roomId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute([$_SESSION['user_id']]);
 }
 
 // Handle comment submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_comment') {
-    if (!isset($_SESSION['user_id'])) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Please login to comment']);
-        exit;
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'add_comment') {
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['error' => 'Please login to comment']);
+            exit;
+        }
 
-    $roomId = $_POST['room_id'];
-    $comment = trim($_POST['comment']);
-    
-    if (empty($comment)) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Comment cannot be empty']);
-        exit;
-    }
+        $roomId = $_POST['room_id'];
+        $comment = trim($_POST['comment']);
 
-    try {
-        $stmt = $conn->prepare("
-            INSERT INTO Comments (user_id, room_id, comment) 
-            VALUES (?, ?, ?)
-        ");
-        $stmt->execute([$_SESSION['user_id'], $roomId, $comment]);
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true]);
-        exit;
-    } catch (PDOException $e) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Failed to add comment']);
-        exit;
+        if (empty($comment)) {
+            echo json_encode(['error' => 'Comment cannot be empty']);
+            exit;
+        }
+
+        try {
+            $conn = db_connect();
+            $stmt = $conn->prepare("
+                INSERT INTO Comments (user_id, room_id, comment, created_at) 
+                VALUES (?, ?, ?, NOW())
+            ");
+            $stmt->execute([$_SESSION['user_id'], $roomId, $comment]);
+            
+            // Return the new comment data
+            echo json_encode([
+                'success' => true,
+                'comment' => $comment,
+                'date' => date('Y-m-d H:i')
+            ]);
+            exit;
+        } catch (PDOException $e) {
+            echo json_encode(['error' => 'Failed to add comment']);
+            exit;
+        }
     }
 }
+
+// Fetch all rooms from the database with their comments
+$conn = db_connect();
+$stmt = $conn->prepare("
+    SELECT 
+        r.*,
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'comment_id', c.comment_id,
+                'comment', c.comment,
+                'admin_response', c.admin_response,
+                'created_at', DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i'),
+                'admin_id', c.admin_id
+            )
+        ) as comments_data
+    FROM Rooms r
+    LEFT JOIN Comments c ON r.room_id = c.room_id
+    GROUP BY r.room_id
+");
+$stmt->execute();
+$rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Process the comments data
+foreach ($rooms as &$room) {
+    $commentsData = json_decode($room['comments_data'], true);
+    $room['comment_count'] = 0;
+    
+    if (is_array($commentsData) && $commentsData[0]['comment_id'] !== null) {
+        $room['comment_count'] = count($commentsData);
+        usort($commentsData, function($a, $b) {
+            return strtotime($b['created_at']) - strtotime($a['created_at']);
+        });
+        $room['comments_data'] = $commentsData;
+    } else {
+        $room['comments_data'] = [];
+    }
+}
+unset($room);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../output.css">
-    <title>Browse Rooms</title>
+    <title>Room Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-
-<body class="bg-zinc-900 text-zinc-100">
+<body class="bg-zinc-900 text-white">
     <?php include '../components/navbar.php'; ?>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <h2 class="text-3xl font-bold text-zinc-100 mb-6">Available Rooms</h2>
-
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Available Rooms</h1>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($rooms as $room): ?>
-                <div class="bg-zinc-800 rounded-lg shadow-lg overflow-hidden border border-zinc-700 transition-transform duration-300 hover:scale-105">
-                    <?php if ($room['image_url']): ?>
-                        <img src="<?php echo htmlspecialchars($room['image_url']); ?>"
-                            class="w-full h-48 object-cover"
-                            alt="<?php echo htmlspecialchars($room['room_name']); ?>">
+                <div class="bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
+                    <?php if (!empty($room['image_url'])): ?>
+                        <img src="<?php echo htmlspecialchars($room['image_url']); ?>" 
+                             alt="<?php echo htmlspecialchars($room['room_name']); ?>" 
+                             class="w-full h-48 object-cover">
                     <?php else: ?>
-                        <img src="../assets/default-room.jpg"
-                            class="w-full h-48 object-cover"
-                            alt="Default Room Image">
+                        <div class="w-full h-48 bg-zinc-700 flex items-center justify-center">
+                            <i class="fas fa-door-open text-4xl text-zinc-500"></i>
+                        </div>
                     <?php endif; ?>
-
+                    
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-zinc-100 mb-2">
+                        <h2 class="text-xl font-semibold mb-2">
                             <?php echo htmlspecialchars($room['room_name']); ?>
-                        </h3>
-
-                        <div class="flex items-center text-zinc-400 mb-2">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            <span>Capacity: <?php echo htmlspecialchars($room['capacity']); ?> people</span>
-                        </div>
-
-                        <?php if ($room['equipment']): ?>
-                            <div class="flex items-center text-zinc-400 mb-4">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span>Equipment: <?php echo htmlspecialchars($room['equipment']); ?></span>
-                            </div>
+                        </h2>
+                        <?php if (isset($room['description']) && !empty($room['description'])): ?>
+                            <p class="text-zinc-400 mb-4">
+                                <?php echo htmlspecialchars($room['description']); ?>
+                            </p>
                         <?php endif; ?>
-
-                        <!-- Comments Section -->
-                        <div class="mt-6 bg-zinc-700 rounded-lg shadow-md p-4">
-                            <h4 class="text-lg font-bold text-zinc-100 mb-4">Comments</h4>
-
-                            <!-- Comment Form -->
-                            <?php if (isset($_SESSION['user_id'])): ?>
-                                <form class="comment-form mb-4" data-room-id="<?php echo $room['room_id']; ?>">
-                                    <textarea 
-                                        class="w-full p-2 rounded bg-zinc-800 text-zinc-100 border border-zinc-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
-                                        placeholder="Add your comment..."
-                                        rows="2"
-                                        required
-                                        resize="none"
-                                    ></textarea>
-                                    <button type="submit" 
-                                        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        Add Comment
-                                    </button>
-                                </form>
-                            <?php else: ?>
-                                <p class="text-zinc-400 mb-4">Please <a href="../login.php" class="text-blue-400 hover:underline">login</a> to add comments.</p>
-                            <?php endif; ?>
-
-                            <!-- Display Comments -->
-                            <div class="comments-container space-y-3" id="comments-<?php echo $room['room_id']; ?>">
-                                <?php 
-                                $comments = getCommentsForRoom($room['room_id']);
-                                $recentComments = array_slice($comments, 0, 2); // Show only 2 most recent comments initially
-                                $olderComments = array_slice($comments, 2); // Store remaining comments
-                                
-                                foreach ($recentComments as $comment): 
-                                ?>
-                                    <div class="comment bg-zinc-800 p-3 rounded">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <span class="font-semibold text-zinc-200"><?php echo htmlspecialchars($comment['user_name']); ?></span>
-                                            <span class="text-sm text-zinc-400"><?php echo date('M j, Y', strtotime($comment['created_at'])); ?></span>
-                                        </div>
-                                        <p class="text-zinc-300"><?php echo htmlspecialchars($comment['comment']); ?></p>
-                                        <?php if ($comment['admin_response']): ?>
-                                            <div class="mt-2 pl-4 border-l-2 border-blue-500">
-                                                <p class="text-sm text-zinc-400">Admin Response (<?php echo htmlspecialchars($comment['admin_name']); ?>):</p>
-                                                <p class="text-zinc-300"><?php echo htmlspecialchars($comment['admin_response']); ?></p>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endforeach; ?>
-
-                                <?php if (!empty($olderComments)): ?>
-                                    <div class="older-comments hidden space-y-3" id="older-comments-<?php echo $room['room_id']; ?>">
-                                        <?php foreach ($olderComments as $comment): ?>
-                                            <div class="comment bg-zinc-800 p-3 rounded">
-                                                <div class="flex justify-between items-start mb-2">
-                                                    <span class="font-semibold text-zinc-200"><?php echo htmlspecialchars($comment['user_name']); ?></span>
-                                                    <span class="text-sm text-zinc-400"><?php echo date('M j, Y', strtotime($comment['created_at'])); ?></span>
-                                                </div>
-                                                <p class="text-zinc-300"><?php echo htmlspecialchars($comment['comment']); ?></p>
-                                                <?php if ($comment['admin_response']): ?>
-                                                    <div class="mt-2 pl-4 border-l-2 border-blue-500">
-                                                        <p class="text-sm text-zinc-400">Admin Response (<?php echo htmlspecialchars($comment['admin_name']); ?>):</p>
-                                                        <p class="text-zinc-300"><?php echo htmlspecialchars($comment['admin_response']); ?></p>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                    <button 
-                                        class="view-more-comments w-full py-2 px-4 bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded transition-colors text-sm"
-                                        data-room-id="<?php echo $room['room_id']; ?>"
-                                        onclick="toggleOlderComments(this)"
-                                    >
-                                        View Previous Comments (<?php echo count($olderComments); ?>)
-                                    </button>
-                                <?php endif; ?>
+                        
+                        <!-- Room Details -->
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center text-zinc-300">
+                                <i class="fas fa-users w-5 text-indigo-400"></i>
+                                <span class="ml-2">Capacity: <?php echo htmlspecialchars($room['capacity']); ?> people</span>
                             </div>
+                            
+                            <?php if (isset($room['equipment']) && !empty($room['equipment'])): ?>
+                                <div class="flex items-start text-zinc-300">
+                                    <i class="fas fa-tools w-5 text-indigo-400 mt-1"></i>
+                                    <div class="ml-2">
+                                        <span class="block mb-1">Equipment:</span>
+                                        <ul class="list-disc list-inside text-sm text-zinc-400 space-y-1 ml-2">
+                                            <?php 
+                                            $equipment = explode(',', $room['equipment']);
+                                            foreach ($equipment as $item): ?>
+                                                <li><?php echo htmlspecialchars(trim($item)); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
-                        <a href="/booking/"
-                            class="inline-block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 mt-4">
-                            Book Room
-                        </a>
+                        <div class="flex justify-between items-center">
+                            <button onclick="openFeedbackDialog(<?php echo $room['room_id']; ?>)"
+                                    class="text-indigo-400 hover:text-indigo-300 flex items-center gap-2">
+                                <i class="fas fa-comments"></i>
+                                <span>Feedback (<?php echo $room['comment_count']; ?>)</span>
+                            </button>
+                            <a href="/booking/index.php" 
+                               class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
+                                Book Now
+                            </a>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
     </div>
 
-    <script src="/room-explore/js/rooms.js"></script>
-</body>
+    <!-- Feedback Dialog -->
+    <dialog id="feedback-dialog" 
+            class="bg-zinc-800 text-white rounded-lg shadow-xl p-0 w-full max-w-2xl mx-auto backdrop:bg-zinc-900/90">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold" id="dialog-room-name"></h3>
+                <button onclick="closeFeedbackDialog()" class="text-zinc-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="feedback-content" class="space-y-4 max-h-[60vh] overflow-y-auto"></div>
+            
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="mt-6 pt-4 border-t border-zinc-700">
+                    <form id="comment-form" class="space-y-3">
+                        <textarea 
+                            id="comment-input"
+                            class="w-full px-3 py-2 bg-zinc-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            rows="3"
+                            placeholder="Share your feedback..."
+                            required
+                        ></textarea>
+                        <div class="flex justify-end">
+                            <button type="submit" 
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                                Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            <?php else: ?>
+                <div class="mt-6 pt-4 border-t border-zinc-700 text-center">
+                    <p class="text-zinc-400">Please <a href="/login.php" class="text-indigo-400 hover:text-indigo-300">login</a> to leave feedback</p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </dialog>
 
+    <script>
+        const feedbackDialog = document.getElementById('feedback-dialog');
+        const dialogRoomName = document.getElementById('dialog-room-name');
+        const feedbackContent = document.getElementById('feedback-content');
+        const commentForm = document.getElementById('comment-form');
+
+        // Store room data for easy access
+        const roomData = <?php echo json_encode($rooms); ?>;
+        let currentRoomId = null;
+
+        function openFeedbackDialog(roomId) {
+            currentRoomId = roomId;
+            const room = roomData.find(r => r.room_id === roomId);
+            if (!room) return;
+
+            dialogRoomName.textContent = room.room_name;
+            feedbackContent.innerHTML = '';
+
+            if (!room.comments_data || room.comments_data.length === 0) {
+                feedbackContent.innerHTML = '<p class="text-zinc-400">No feedback yet.</p>';
+            } else {
+                room.comments_data.forEach(comment => {
+                    addCommentToDialog(
+                        comment.comment,
+                        comment.created_at,
+                        comment.admin_response,
+                        comment.comment_id
+                    );
+                });
+            }
+
+            feedbackDialog.showModal();
+        }
+
+        function addCommentToDialog(comment, date, adminResponse = null, commentId = null) {
+            const commentHtml = `
+                <div class="bg-zinc-700/50 rounded-lg p-4 space-y-3" ${commentId ? `data-comment-id="${commentId}"` : ''}>
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <p class="text-zinc-200">${comment}</p>
+                            <p class="text-xs text-zinc-500">${date}</p>
+                        </div>
+                    </div>
+                    ${adminResponse ? `
+                        <div class="ml-4 mt-2 border-l-2 border-indigo-500 pl-4">
+                            <p class="text-indigo-400 text-sm">Admin Response:</p>
+                            <p class="text-zinc-300">${adminResponse}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            if (feedbackContent.innerHTML === '<p class="text-zinc-400">No feedback yet.</p>') {
+                feedbackContent.innerHTML = '';
+            }
+            feedbackContent.insertAdjacentHTML('beforeend', commentHtml);
+        }
+
+        function closeFeedbackDialog() {
+            feedbackDialog.close();
+            currentRoomId = null;
+            if (commentForm) {
+                commentForm.reset();
+            }
+        }
+
+        // Handle comment submission
+        if (commentForm) {
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const commentInput = document.getElementById('comment-input');
+                const comment = commentInput.value.trim();
+                
+                if (!comment) return;
+
+                try {
+                    const response = await fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `action=add_comment&room_id=${currentRoomId}&comment=${encodeURIComponent(comment)}`
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Add the new comment to the dialog
+                        addCommentToDialog(comment, data.date);
+                        
+                        // Update the comment count in the room card
+                        const commentCountEl = document.querySelector(`button[onclick="openFeedbackDialog(${currentRoomId})"] span`);
+                        const currentCount = parseInt(commentCountEl.textContent.match(/\d+/)[0]);
+                        commentCountEl.textContent = `Feedback (${currentCount + 1})`;
+                        
+                        // Clear the form
+                        commentForm.reset();
+                        
+                        // If this was the first comment, remove the "No feedback yet" message
+                        if (feedbackContent.innerHTML === '<p class="text-zinc-400">No feedback yet.</p>') {
+                            feedbackContent.innerHTML = '';
+                        }
+                    } else {
+                        alert(data.error || 'Failed to add comment');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to submit comment');
+                }
+            });
+        }
+
+        // Close dialog when clicking outside
+        feedbackDialog.addEventListener('click', (e) => {
+            if (e.target === feedbackDialog) {
+                closeFeedbackDialog();
+            }
+        });
+    </script>
+</body>
 </html>

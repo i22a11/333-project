@@ -105,7 +105,7 @@ export const InvokeEditRoom = async (room) => {
   }
 
   try {
-    const response = await fetch("/admin/api/edit-room", {
+    const response = await fetch("/admin/api/edit-room/index.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

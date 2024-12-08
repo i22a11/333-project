@@ -37,13 +37,15 @@ $total_bookings = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Room Booking System</title>
+    <title>ReserveIt - Room Booking System</title>
     <link rel="stylesheet" href="output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-zinc-900 text-zinc-100">
     <?php include 'components/navbar.php'; ?>
 
@@ -76,7 +78,7 @@ $total_bookings = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
                     </a>
                     <a href="./reporting/index.php" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
                         <div class="flex items-center">
-                        <i class="fas fa-chart-line text-red-400 mr-3"></i>
+                            <i class="fas fa-chart-line text-red-400 mr-3"></i>
                             <span>Reporting & Analytics</span>
                         </div>
                         <i class="fas fa-chevron-right"></i>
@@ -120,7 +122,7 @@ $total_bookings = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
                             </div>
                         <?php endforeach; ?>
                         <div class="text-center mt-4">
-                            <a href="/booking" class="text-blue-400 hover:text-blue-300 text-sm">View all bookings</a>
+                            <a href="/booking/index.php" class="text-blue-400 hover:text-blue-300 text-sm">View all bookings</a>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -128,4 +130,5 @@ $total_bookings = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
         </div>
     </div>
 </body>
+
 </html>

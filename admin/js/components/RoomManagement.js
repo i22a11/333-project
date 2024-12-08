@@ -81,15 +81,22 @@ export default class RoomManagement extends HTMLElement {
     if (editForm) {
       editForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        await editRoom(editForm, {
+
+        const currentRoom = {
           id: editForm.querySelector('#edit-room-id').value,
           name: editForm.querySelector('#edit-room-name').value,
           capacity: parseInt(editForm.querySelector('#edit-room-capacity').value),
-          equipment: editForm.querySelector('#edit-room-equipment').value
-        });
-        editRoomDialog?.close();
-        // Refresh the page to show updated data
-        window.location.reload();
+          equipment: editForm.querySelector('#edit-room-equipment').value,
+          image_url: document.querySelector('#edit-image-preview img')?.src
+        };
+
+        try {
+          await editRoom(editForm, currentRoom);
+          editRoomDialog?.close();
+        } catch (error) {
+          console.error('Error editing room:', error);
+          alert('Failed to edit room. Please try again.');
+        }
       });
     }
 
@@ -102,8 +109,11 @@ export default class RoomManagement extends HTMLElement {
         if (file) {
           const reader = new FileReader();
           reader.onload = () => {
-            imagePreview.querySelector('img').src = reader.result;
-            imagePreview.classList.remove('hidden');
+            const previewImg = imagePreview.querySelector('img');
+            if (previewImg) {
+              previewImg.src = reader.result;
+              imagePreview.classList.remove('hidden');
+            }
           };
           reader.readAsDataURL(file);
         } else {
@@ -131,9 +141,12 @@ export default class RoomManagement extends HTMLElement {
         <td class="w-1/4 px-6 py-4">
           <div class="flex items-center">
             <div class="h-10 w-10 flex-shrink-0">
-              <div class="h-10 w-10 rounded-full bg-blue-900/50 text-blue-400 flex items-center justify-center">
-                <i class="fas fa-door-open"></i>
-              </div>
+              ${room.image_url ? 
+                `<img src="${room.image_url}" alt="${room.name}" class="h-10 w-10 rounded-full object-cover">` :
+                `<div class="h-10 w-10 rounded-full bg-blue-900/50 text-blue-400 flex items-center justify-center">
+                  <i class="fas fa-door-open"></i>
+                </div>`
+              }
             </div>
             <div class="ml-4">
               <div class="text-sm font-medium text-zinc-100">${room.name}</div>
