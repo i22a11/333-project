@@ -209,9 +209,9 @@ if (!isset($_SESSION['user_id'])) {
                                 <!-- Populate bookings dynamically using JS -->
                             </tbody>
                         </table>
-                        <div id="cancelBookingResult" class="hidden mt-4 p-4 rounded-md text-sm text-zinc-100"></div>
                     </div>
                 </div>
+                <div id="cancelBookingResult" class="hidden mt-4 p-4 rounded-md text-sm text-zinc-100"></div>
             </div>
         </div>
     </div>

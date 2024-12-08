@@ -82,7 +82,7 @@ document.addEventListener('click', async function (event) {
                 div.classList.remove('hidden');
             } else {
                 const div = document.getElementById('cancelBookingResult');
-                div.innerHTML = `<p class="text-green-400">${data.message}</p>`;
+                div.innerHTML = `<p class="text-green-400">${data.message} Reloading the page in 3 seconds..</p>`;
                 div.classList.remove('hidden');
                 setTimeout(() => {
                     location.reload();
@@ -174,7 +174,7 @@ document.getElementById('book-btn').addEventListener('click', async function () 
             return;
         } else {
             const div = document.getElementById('bookingResult');
-            div.innerHTML = `<p class="text-green-400">${result.message}</p>`;
+            div.innerHTML = `<p class="text-green-400">${result.message} Reloading the page in 3 seconds..</p>`;
             div.classList.remove('hidden');
             document.getElementById('booking-form').reset();
             document.getElementById('available-times-container').classList.add('hidden');
