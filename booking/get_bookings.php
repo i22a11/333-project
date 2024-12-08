@@ -25,7 +25,11 @@
             FROM Bookings b
             JOIN Rooms r ON b.room_id = r.room_id
             WHERE b.user_id = :user_id AND b.status != 'cancelled'
-            ORDER BY b.date DESC, b.time DESC
+            AND (
+                b.date > CURDATE()
+                OR (b.date = CURDATE() AND b.time >= CURTIME())
+            )
+            ORDER BY b.date ASC, b.time ASC
         ");
         $stmt->execute([':user_id' => $userId]);
 

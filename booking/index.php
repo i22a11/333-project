@@ -127,6 +127,7 @@ if (!isset($_SESSION['user_id'])) {
     <title>333 Project Website!</title>
     <link rel="stylesheet" href="../output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-zinc-900 text-zinc-100">
     <!-- Navigation -->
@@ -140,7 +141,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
 
         <!-- Main content -->
-        <div class="flex flex-col md:flex-row space-x-4">
+        <div class="flex flex-col md:flex-row md:space-x-10 p-5 hidde-overflow">
             <!-- Booking Form -->
             <div class="w-full md:w-1/2">
                 <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Booking System</h2>
@@ -165,31 +166,34 @@ if (!isset($_SESSION['user_id'])) {
                             </script>
                             <div>
                                 <button id="view-times-btn" type="button"
-                                    class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    class="bg-zinc-700 text-white py-3 px-6 rounded-md hover:bg-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     View Available Times
                                 </button>
                             </div>
                         </form>
-                    </div>
-                    <div id="available-times-container" class="hidden space-y-4 mt-4">
-                        <div>
-                            <label for="time" class="block text-sm font-medium text-zinc-400">Select Time:</label>
-                            <select id="time" name="time"
-                                class="mt-2 block w-full p-2 border border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-zinc-700 text-zinc-100">
-                            </select>
+                        <div id="available-times-container" class="hidden space-y-4 mt-4">
+                            <div>
+                                <label for="time" class="block text-sm font-medium text-zinc-300">Select Time:</label>
+                                <select id="time" name="time"
+                                    class="mt-2 block w-full p-2 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-zinc-700 text-zinc-100">
+                                </select>
+                            </div>
+                            <div>
+                                <button id="book-btn"
+                                class="bg-zinc-700 text-white py-3 px-6 rounded-md hover:bg-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    Book
+                                </button>
+                            </div>
                         </div>
-                        <button id="book-btn"
-                            class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            Book
-                        </button>
                     </div>
                 </div>
             </div>
             <!-- User Bookings -->
             <div class="w-full md:w-1/2">
-                <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Your Bookings</h2>
+                <h2 class="text-xl font-semibold text-zinc-100 pt-5">Your Upcoming Bookings</h2>
+                <p class="mt-2 text-sm text-zinc-400 pb-5">You can press on cancel to cancel a booking!</p>
                 <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
-                    <div class="overflow-hidden rounded-lg">
+                    <div class="overflow-hidden rounded-lg overflow-x-auto">
                         <table class="table-auto border-collapse w-full text-zinc-100">
                             <thead>
                                 <tr class="bg-zinc-700 text-left text-sm font-medium text-zinc-100">
@@ -210,5 +214,5 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
 </body>
-<script src="/booking/booking.js"></script>
+<script src="./booking.js"></script>
 </html>
