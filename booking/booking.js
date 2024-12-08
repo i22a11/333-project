@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // If there is an error (returned by the php), display the error message in the select
         if (data.error) {
             console.log(data.message);
-            select.innerHTML = `<option class="text-zinc-400">No rooms were found..</option>`;
+            select.innerHTML = `<option class="text-zinc-400" value="No room">No rooms were found..</option>`;
             return;
         }
 
@@ -93,6 +93,9 @@ document.getElementById('view-times-btn').addEventListener('click', async functi
     
     if (!room || !date) {
         alert('Please select both room and date.');
+        return;
+    } else if (room === 'No room') {
+        alert('Sorry, no rooms were found.. Please try again later.');
         return;
     }
 

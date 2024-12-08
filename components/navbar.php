@@ -16,7 +16,7 @@
                 <a href="../index.php" class="text-zinc-300 hover:text-zinc-100 px-3 py-2 rounded-md text-sm font-medium">
                     <i class="fas fa-home mr-2"></i>Home
                 </a>
-                <a href="/auth/logout.php" class="text-zinc-300 hover:text-zinc-100 px-3 py-2 rounded-md text-sm font-medium">
+                <a href="./auth/logout.php" class="text-zinc-300 hover:text-zinc-100 px-3 py-2 rounded-md text-sm font-medium">
                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                 </a>
             </div>
