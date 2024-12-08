@@ -16,14 +16,14 @@ export const addRoom = async (formContainer) => {
 
   if (formContainer && dialog) {
     // @ts-ignore
-    const name = document.getElementById("name").value;
+    const name = document.getElementById("room-name").value;
     const capacity = parseInt(
       // @ts-ignore
-      document.getElementById("capacity").value,
+      document.getElementById("room-capacity").value,
       10
     );
     // @ts-ignore
-    const equipment = document.getElementById("equipment").value;
+    const equipment = document.getElementById("room-equipment").value;
 
     if (!name || !capacity || !equipment) {
       alert("Please fill in all fields.");

@@ -80,10 +80,16 @@ CREATE TABLE `Comments` (
   `user_id` int(11) NOT NULL,
   `room_id` int(11) NOT NULL,
   `comment` text NOT NULL,
+  `admin_id` int(11) DEFAULT NULL,
+  `admin_response` TEXT DEFAULT NULL, 
+  `is_resolved` BOOLEAN DEFAULT FALSE,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`comment_id`),
   KEY `user_id` (`user_id`),
-  KEY `room_id` (`room_id`)
+  KEY `room_id` (`room_id`),
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`user_id`),
+  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `Rooms` (`room_id`),
+  CONSTRAINT `comments_ibfk_3` FOREIGN KEY (`admin_id`) REFERENCES `Users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

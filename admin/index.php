@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="/admin/js/index.js" type="module" defer></script>
+    <script src="/admin/js/comments.js" defer></script>
 </head>
 
 <body class="bg-zinc-900 antialiased text-zinc-100">
@@ -18,6 +19,16 @@
                 <h1 class="text-2xl sm:text-3xl font-bold text-zinc-100 mb-8">Dashboard</h1>
                 <div id="stats-container" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8"></div>
                 <div id="room-management" class="rounded-lg bg-zinc-800 p-6 shadow-sm border border-zinc-700"></div>
+                
+                <!-- Comment Management Section -->
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold text-zinc-100 mb-4">Comment Management</h2>
+                    <div id="comments-section" class="rounded-lg bg-zinc-800 p-6 shadow-sm border border-zinc-700">
+                        <div id="comments-list" class="space-y-4">
+                            <!-- Comments will be loaded here dynamically -->
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -53,6 +64,28 @@
                 <button type="submit" slot="confirm"
                     class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-800">
                     Add Room
+                </button>
+            </div>
+        </form>
+    </custom-dialog>
+
+    <!-- Comment Reply Dialog -->
+    <custom-dialog id="reply-comment-dialog" title="Reply to Comment" description="Add your reply to this comment.">
+        <form id="reply-comment-form" class="space-y-6">
+            <input type="hidden" id="comment-id" name="comment_id">
+            <div>
+                <label for="reply-text" class="block text-sm font-medium text-zinc-300">Your Reply</label>
+                <div class="mt-1">
+                    <textarea name="reply" id="reply-text" rows="4" required
+                        class="block w-full rounded-md bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-4 py-3"
+                        placeholder="Enter your reply..."></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" slot="confirm"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-800">
+                    Submit Reply
                 </button>
             </div>
         </form>
