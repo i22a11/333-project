@@ -39,12 +39,19 @@
 
     // Function to book a room
     function bookRoom($userID, $roomID, $date, $time, $pdo) {
+        // Check if the date is in the past
+        if (strtotime($date) < strtotime(date('Y-m-d'))) {
+            return ['success' => false, 'message' => 'You cannot book a room for a past date.'];
+        }
+        // Check if the time is in the past
+        if (strtotime($date) === strtotime(date('Y-m-d')) && strtotime($time) < strtotime(date('H:i'))) {
+            return ['success' => false, 'message' => 'You cannot book a room for a past time.'];
+        }
         try {
             // Step 1: Check if the room is available
             $stmt = $pdo->prepare("
                 SELECT * FROM Bookings 
                 WHERE room_id = :room_id 
-                AND status = 'confirmed' 
                 AND date = :date
                 AND time = :time
             ");
@@ -57,7 +64,7 @@
 
             // Check if the room is already booked for the selected time
             if ($stmt->rowCount() > 0) {
-                return ['success' => false, 'message' => 'Room is already booked for the selected time.'];
+                return ['success' => false, 'message' => 'Room is already booked for the selected time. Please refresh the page to see the updated available times.'];
             }
 
             // Step 2: Book the room if it is available

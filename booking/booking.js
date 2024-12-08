@@ -75,10 +75,18 @@ document.addEventListener('click', async function (event) {
             });
 
             const data = await response.json();
-            alert(data.message);
-
-            if (data.success) {
-                location.reload(); // Refresh the table to show the updated bookings
+            
+            if (data['success'] === false) {
+                const div = document.getElementById('cancelBookingResult');
+                div.innerHTML = `<p class="text-red-400">${data.message}</p>`;
+                div.classList.remove('hidden');
+            } else {
+                const div = document.getElementById('cancelBookingResult');
+                div.innerHTML = `<p class="text-green-400">${data.message}</p>`;
+                div.classList.remove('hidden');
+                setTimeout(() => {
+                    location.reload();
+                }, 3000); 
             }
         } catch (error) {
             console.error('Error canceling booking:', error);
@@ -92,10 +100,14 @@ document.getElementById('view-times-btn').addEventListener('click', async functi
     const date = document.getElementById('date').value;
     
     if (!room || !date) {
-        alert('Please select both room and date.');
+        const div = document.getElementById('bookingResult');
+        div.innerHTML = `<p class="text-red-400">Please select both room and date.</p>`;
+        div.classList.remove('hidden');
         return;
     } else if (room === 'No room') {
-        alert('Sorry, no rooms were found.. Please try again later.');
+        const div = document.getElementById('bookingResult');
+        div.innerHTML = `<p class="text-red-400">Sorry, no rooms were found.. Please try again later.</p>`;
+        div.classList.remove('hidden');
         return;
     }
 
@@ -109,6 +121,9 @@ document.getElementById('view-times-btn').addEventListener('click', async functi
         const data = await response.json();
 
         if (data.error) {
+            const div = document.getElementById('bookingResult');
+            div.innerHTML = `<p class="text-red-400">${data.message}</p>`;
+            div.classList.remove('hidden');
             console.log(data.message);
             return;
         }
@@ -133,7 +148,9 @@ document.getElementById('book-btn').addEventListener('click', async function () 
     const time = document.getElementById('time').value;
 
     if (!time) {
-        alert('Please select a time.');
+        const div = document.getElementById('bookingResult');
+        div.innerHTML = `<p class="text-red-400">Please select a time.</p>`;
+        div.classList.remove('hidden');
         return;
     }
 
@@ -149,16 +166,27 @@ document.getElementById('book-btn').addEventListener('click', async function () 
         });
 
         const result = await response.json();
-        alert(result.message);
-
-        if (result.success) {
+        
+        if (result['success'] === false) {
+            const div = document.getElementById('bookingResult');
+            div.innerHTML = `<p class="text-red-400">${result.message}</p>`;
+            div.classList.remove('hidden');
+            return;
+        } else {
+            const div = document.getElementById('bookingResult');
+            div.innerHTML = `<p class="text-green-400">${result.message}</p>`;
+            div.classList.remove('hidden');
             document.getElementById('booking-form').reset();
             document.getElementById('available-times-container').classList.add('hidden');
             document.getElementById('view-times-btn').style.display = 'block';
-            location.reload(); // Refresh the table to show updated bookings
+            setTimeout(() => {
+                location.reload();
+            }, 3000); // Refresh the table to show updated bookings
         }
     } catch (error) {
-        alert("Couldn't book the room at the moment. Please try again.");
+        const div = document.getElementById('bookingResult');
+        div.innerHTML = `<p class="text-red-400">Couldn't book the room at the moment. Please try again.</p>`;
+        div.classList.remove('hidden');
         console.error('Error booking room:', error);
     }
 });

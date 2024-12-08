@@ -1,5 +1,10 @@
 <?php
 
+    
+    //WHEN YOU OPEN THIS PLEASE FIX THE this function so it doesn't display past time if the date is today slots OR at least prevent the user from booking them
+    
+
+
 require '../db_connection.php';
 $pdo = db_connect();
 
@@ -29,7 +34,15 @@ function getAvailableTimeSlots($roomID, $date){
     
     $availableSlots = [];
     // Set the time slots intrvals (we'll use it to get the available time slots)
-    $start_time = strtotime('07:00 AM'); // This function converts the string to a timestamp in 24-hour format
+
+    $start_time = strtotime('07:00 AM'); 
+
+    // This part is to prevent the user from booking past time slots if the date is today
+    if ($date === date('Y-m-d')) {
+        $nextHour = strtotime('+1 hour', strtotime(date('H:00')));
+        $start_time = max($nextHour, $start_time); // Make sure that the start time is at least 7:00 AM and not less
+    }
+
     $end_time = strtotime('05:00 PM');
     $interval = 60 * 60; // 60 minutes interval
 
@@ -62,7 +75,7 @@ function getAvailableTimeSlots($roomID, $date){
 
     //If no time slots are available, return an error message
     if(empty($availableSlots)){
-        return json_encode(array("error"=> true, "message" => "No time slots available for the selected date"));
+        return json_encode(array("error"=> true, "message" => "No time slots available for the selected date."));
     }
     
     return json_encode($availableSlots);
