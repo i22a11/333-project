@@ -4,7 +4,7 @@ session_start();
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /auth/login.php');
+    header('Location: ./auth/login.php');
     exit();
 }
 
@@ -71,6 +71,13 @@ $total_bookings = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
                         <div class="flex items-center">
                             <i class="fas fa-user text-purple-400 mr-3"></i>
                             <span>My Profile</span>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="./reporting/index.php" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
+                        <div class="flex items-center">
+                        <i class="fas fa-chart-line text-red-400 mr-3"></i>
+                            <span>Reporting & Analytics</span>
                         </div>
                         <i class="fas fa-chevron-right"></i>
                     </a>

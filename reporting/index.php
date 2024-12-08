@@ -73,7 +73,13 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                     <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
                         <div class="p-6">
                             <?php
-                                foreach($upcomingBookings as $row => $booking){
+                            if (array_key_exists('error', $upcomingBookings) && $upcomingBookings['error'] === true) {
+                                echo '<div class="text-center py-8 text-zinc-400">
+                                    <i class="fas fa-calendar-times text-4xl mb-3"></i>
+                                    <p class="text-lg">No Upcoming bookings found!</p>
+                                </div>';
+                            } else {
+                               foreach($upcomingBookings as $row => $booking){
                                     echo '<div class="flex justify-between items-center mb-4">';
                                     echo '<div>';
                                     echo '<h3 class="text-lg font-semibold">' . $booking['room_name'] . '</h3>';
@@ -87,11 +93,9 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                                         ($booking['status'] === 'cancelled' ? 'text-red-400' : ''))) . 
                                     '">' . $booking['status'] . '</span></h4>';
                                     echo '</div>';
-                                    //echo '<div>';
-                                    //echo '<a href="bookingDetails.php?booking_id=' . $booking['booking_id'] . '" class="text-blue-500 hover:text-blue-700">View Details</a>';
-                                    //echo '</div>';
                                     echo '</div>';
                                 }
+                            }
                             ?>
                         </div>
                     </div>
@@ -101,6 +105,12 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                     <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
                         <div class="p-6">
                             <?php
+                            if (array_key_exists('error', $pastBookings) && $pastBookings['error'] === true) {
+                                echo '<div class="text-center py-8 text-zinc-400">
+                                    <i class="fas fa-calendar-times text-4xl mb-3"></i>
+                                    <p class="text-lg">No past bookings found!</p>
+                                </div>';
+                            } else {
                                 foreach($pastBookings as $row => $booking){
                                     echo '<div class="flex justify-between items-center mb-4">';
                                     echo '<div>';
@@ -115,11 +125,9 @@ $upcomingBookings = getPastUpcomingBookings("upcoming");
                                         ($booking['status'] === 'cancelled' ? 'text-red-400' : ''))) . 
                                     '">' . $booking['status'] . '</span></h4>';
                                     echo '</div>';
-                                    //echo '<div>';
-                                    //echo '<a href="bookingDetails.php?booking_id=' . $booking['booking_id'] . '" class="text-blue-500 hover:text-blue-700">View Details</a>';
-                                    //echo '</div>';
                                     echo '</div>';
                                 }
+                            }
                             ?>
                         </div>
                     </div>

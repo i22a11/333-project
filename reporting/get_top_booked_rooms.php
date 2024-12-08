@@ -15,7 +15,6 @@ function getTop5BookedRooms() {
     $stmt = $pdo->prepare("
         SELECT room_id, COUNT(*) as count
         FROM Bookings
-        WHERE status = 'confirmed'
         GROUP BY room_id
         ORDER BY count DESC
         LIMIT 5 
