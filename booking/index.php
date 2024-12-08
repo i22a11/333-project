@@ -136,7 +136,7 @@ if (!isset($_SESSION['user_id'])) {
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Page header -->
         <div class="px-4 py-6 sm:px-0">
-            <h1 class="text-3xl font-bold text-zinc-100">Booking System</h1>
+            <h1 class="text-3xl font-bold text-zinc-100">Book & Cancel Bookings</h1>
             <p class="mt-2 text-sm text-zinc-400">Here you can book rooms and cancel your booking!</p>
         </div>
 
@@ -144,7 +144,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="flex flex-col md:flex-row md:space-x-10 p-5 hidde-overflow">
             <!-- Booking Form -->
             <div class="w-full md:w-1/2">
-                <h2 class="text-xl font-semibold text-zinc-100 p-2 py-5">Booking System</h2>
+                <h2 class="text-xl font-semibold text-zinc-100 p-2 pb-5">Booking System</h2>
                 <div class="bg-zinc-800 shadow-lg rounded-lg overflow-hidden border border-zinc-700">
                     <div class="p-6">
                         <form id="booking-form" class="space-y-6">

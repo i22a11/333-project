@@ -1,5 +1,5 @@
 // Fetch data and create the chart using Chart.js
-async function fetchChartData() {
+async function fetchRoomsChartData() {
     try {
         const response = await fetch('get_top_booked_rooms.php');
         if (!response.ok) {
@@ -9,7 +9,7 @@ async function fetchChartData() {
         const data = await response.json();
 
         // Create the chart using Chart.js
-        const ctx = document.getElementById('myChart').getContext('2d');
+        const ctx = document.getElementById('RoomsChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar', // Chart type
             data: {
@@ -42,29 +42,28 @@ async function fetchChartData() {
                     },
                     labels: {
                         font: {
-                            size: 18,  
-                            weight: 'bold' 
+                            size: 18,
                         },
-                        color: 'white'  
+                        color: 'white'
                     }
                 },
                 scales: {
                     x: {
                         ticks: {
                             font: {
-                                size: 16,  
+                                size: 14,
                             },
-                            color: 'white' 
+                            color: 'white'
                         }
                     },
                     y: {
                         ticks: {
                             font: {
-                                size: 16, 
+                                size: 14,
                             },
-                            color: 'white' 
+                            color: 'white'
                         },
-                        beginAtZero: true  
+                        beginAtZero: true
                     }
                 }
             }
@@ -74,4 +73,62 @@ async function fetchChartData() {
     }
 }
 
-fetchChartData();
+fetchRoomsChartData();
+
+async function fetchDatesChartData() {
+    try {
+        const response = await fetch('get_booking_dates.php');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const ctx = document.getElementById('DatesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.months,
+                datasets: [{
+                    label: 'Bookings',
+                    data: data.bookings,
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1,
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointBorderColor: 'rgba(54, 162, 235, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                    },
+                    tooltip: {
+                        enabled: true,
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Bookings',
+                        },
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching or creating chart:', error);
+    }
+}
+
+fetchDatesChartData();
