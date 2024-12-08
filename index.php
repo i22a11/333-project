@@ -53,21 +53,21 @@ $total_bookings = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
             <div class="bg-zinc-800 p-6 rounded-lg border border-zinc-700 col-span-full lg:col-span-1">
                 <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
                 <div class="grid grid-cols-1 gap-4">
-                    <a href="/room-explore" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
+                    <a href="./room-explore/index.php" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
                         <div class="flex items-center">
                             <i class="fas fa-search text-blue-400 mr-3"></i>
                             <span>Browse Rooms</span>
                         </div>
                         <i class="fas fa-chevron-right"></i>
                     </a>
-                    <a href="/booking" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
+                    <a href="./booking/index.php" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
                         <div class="flex items-center">
                             <i class="fas fa-calendar-plus text-green-400 mr-3"></i>
                             <span>Book a Room</span>
                         </div>
                         <i class="fas fa-chevron-right"></i>
                     </a>
-                    <a href="/auth/profile.php" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
+                    <a href="./auth/profile.php" class="flex items-center justify-between p-4 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition-colors duration-200">
                         <div class="flex items-center">
                             <i class="fas fa-user text-purple-400 mr-3"></i>
                             <span>My Profile</span>
