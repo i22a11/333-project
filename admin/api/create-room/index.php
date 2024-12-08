@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $input["name"] ?? null;
     $capacity = $input["capacity"] ?? null;
     $equipment = $input["equipment"] ?? null;
+    $image_url = $input["image_url"] ?? null;
 
     if (empty($name) || empty($capacity) || empty($equipment)) {
         echo json_encode([
@@ -19,9 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $db = db_connect();
-        $query = "INSERT INTO Rooms (room_name, capacity, equipment) VALUES (?, ?, ?)";
+        $query = "INSERT INTO Rooms (room_name, capacity, equipment, image_url) VALUES (?, ?, ?, ?)";
         $stmt = $db->prepare($query);
-        $stmt->execute([$name, $capacity, $equipment]);
+        $stmt->execute([$name, $capacity, $equipment, $image_url]);
 
         echo json_encode([
             "success" => true,

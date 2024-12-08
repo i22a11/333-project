@@ -19,11 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     try {
         $db = db_connect();
         
-        $stmt = $db->prepare("UPDATE Rooms SET room_name = ?, capacity = ?, equipment = ? WHERE room_id = ?");
+        $stmt = $db->prepare("UPDATE Rooms SET room_name = ?, capacity = ?, equipment = ?, image_url = ? WHERE room_id = ?");
         $stmt->execute([
             $input['name'],
             $input['capacity'],
             $input['equipment'],
+            $input['image_url'] ?? null,
             $input['id']
         ]);
 
@@ -51,6 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     http_response_code(405);
     echo json_encode([
         "success" => false,
-        "message" => "Invalid request method."
+        "message" => "Method not allowed."
     ]);
 }

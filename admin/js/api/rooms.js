@@ -39,8 +39,9 @@ export const InvokeDeleteRoom = async (id) => {
  * @param {string} name
  * @param {number} capacity
  * @param {string} equipment
+ * @param {string|null} image_url
  */
-export const InvokeCreateRoom = async (name, capacity, equipment) => {
+export const InvokeCreateRoom = async (name, capacity, equipment, image_url = null) => {
   if (name && capacity && equipment) {
     console.log("invoking create-room");
 
@@ -54,6 +55,7 @@ export const InvokeCreateRoom = async (name, capacity, equipment) => {
           name: name,
           capacity: capacity,
           equipment: equipment,
+          image_url: image_url
         }),
       });
 

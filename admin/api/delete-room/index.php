@@ -21,18 +21,38 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     try {
         $db = db_connect();
 
-        // Delete related bookings
-        $stmt = $db->prepare("DELETE FROM Bookings WHERE room_id = ?");
-        $stmt->execute([$room_id]);
+        // Start transaction
+        $db->beginTransaction();
 
-        // Delete room
-        $stmt = $db->prepare("DELETE FROM Rooms WHERE room_id = ?");
-        $stmt->execute([$room_id]);
+        try {
+            // Delete related comments first
+            $stmt = $db->prepare("DELETE FROM Comments WHERE room_id = ?");
+            $stmt->execute([$room_id]);
 
-        echo json_encode([
-            "success" => true,
-            "message" => "Room and related bookings deleted successfully."
-        ]);
+            // Delete related bookings
+            $stmt = $db->prepare("DELETE FROM Bookings WHERE room_id = ?");
+            $stmt->execute([$room_id]);
+
+            // Delete room usage stats
+            $stmt = $db->prepare("DELETE FROM RoomUsageStats WHERE room_id = ?");
+            $stmt->execute([$room_id]);
+
+            // Delete room
+            $stmt = $db->prepare("DELETE FROM Rooms WHERE room_id = ?");
+            $stmt->execute([$room_id]);
+
+            // Commit transaction
+            $db->commit();
+
+            echo json_encode([
+                "success" => true,
+                "message" => "Room and related data deleted successfully."
+            ]);
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $db->rollBack();
+            throw $e;
+        }
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode([

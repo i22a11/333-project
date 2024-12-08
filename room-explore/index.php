@@ -198,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
     </div>
 
-    <script src="js/rooms.js"></script>
+    <script src="/room-explore/js/rooms.js"></script>
 </body>
 
 </html>
