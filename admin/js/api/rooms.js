@@ -47,7 +47,7 @@ export const InvokeCreateRoom = async ({ name, capacity, equipment, image_url = 
     console.log("invoking create-room");
 
     try {
-      const response = await fetch("/admin/api/create-room/", {
+      const response = await fetch("/admin/api/create-room/index.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
