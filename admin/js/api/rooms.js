@@ -47,7 +47,7 @@ export const InvokeCreateRoom = async ({ name, capacity, equipment, image_url = 
     console.log("invoking create-room");
 
     try {
-      const response = await fetch("/admin/api/create-room", {
+      const response = await fetch("/admin/api/create-room/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,18 +60,33 @@ export const InvokeCreateRoom = async ({ name, capacity, equipment, image_url = 
         }),
       });
 
-      if (!(response.status === 201)) {
-        throw new Error("Failed to create room.");
+      const data = await response.json();
+      
+      if (response.status === 201 && data.success) {
+        return { success: true };
       }
-
-      return { success: true };
+      
+      throw new Error(data.message || "Failed to create room");
     } catch (error) {
       console.error("Error creating room:", error);
-      return { success: false, error };
+      return { 
+        success: false, 
+        details: {
+          endpoint: "/admin/api/create-room/",
+          requestData: { name, capacity, equipment, image_url }
+        }
+      };
     }
   } else {
-    alert("Please fill in all fields before submitting.");
-    return { success: false };
+    return { 
+      success: false, 
+      error: "Missing required fields",
+      details: {
+        name: Boolean(name),
+        capacity: Boolean(capacity),
+        equipment: Boolean(equipment)
+      }
+    };
   }
 };
 
