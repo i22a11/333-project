@@ -41,12 +41,20 @@ export class Bookings extends HTMLElement {
         body: JSON.stringify({ booking_id: bookingId, status }),
       });
       const data = await response.json();
+      
       if (data.success) {
         await this.fetchBookings();
         window.location.reload();
+      } else {
+        console.error('Update status error:', data);
+        if (data.debug) {
+          console.log('Debug info:', data.debug);
+        }
+        alert(data.message || 'Failed to update booking status');
       }
     } catch (error) {
       console.error("Failed to update booking status:", error);
+      alert('An error occurred while updating the booking status');
     }
   }
 
@@ -92,11 +100,11 @@ export class Bookings extends HTMLElement {
                     <table class="w-full table-fixed divide-y divide-zinc-700">
                         <thead>
                             <tr class="bg-zinc-800/50">
-                                <th scope="col" class="w-1/4 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">User</th>
+                                <th scope="col" class="w-1/5 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">User</th>
                                 <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Room</th>
-                                <th scope="col" class="w-1/4 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Date & Time</th>
+                                <th scope="col" class="w-1/5 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Date & Time</th>
                                 <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Status</th>
-                                <th scope="col" class="w-1/6 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Actions</th>
+                                <th scope="col" class="w-1/4 px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-700 bg-zinc-800">
@@ -169,14 +177,16 @@ export class Bookings extends HTMLElement {
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
                                                     data-action="confirm"
-                                                    class="inline-flex items-center rounded-l-md bg-green-900/50 px-2.5 py-1.5 text-sm font-medium text-green-400 hover:bg-green-900/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
-                                                    <i class="fas fa-check h-3.5 w-3.5"></i>
+                                                    class="inline-flex items-center gap-1.5 rounded-l-md bg-green-900/50 px-3 py-1.5 text-sm font-medium text-green-400 hover:bg-green-900/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
+                                                    <i class="fas fa-check"></i>
+                                                    <span>Confirm</span>
                                                 </button>
                                                 <button 
                                                     data-booking-id="${booking.booking_id}" 
                                                     data-action="cancel"
-                                                    class="inline-flex items-center rounded-r-md bg-red-900/50 px-2.5 py-1.5 text-sm font-medium text-red-400 hover:bg-red-900/70 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
-                                                    <i class="fas fa-times h-3.5 w-3.5"></i>
+                                                    class="inline-flex items-center gap-1.5 rounded-r-md bg-red-900/50 px-3 py-1.5 text-sm font-medium text-red-400 hover:bg-red-900/70 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-800 transition-colors">
+                                                    <i class="fas fa-times"></i>
+                                                    <span>Cancel</span>
                                                 </button>
                                             </div>
                                             `
@@ -198,12 +208,10 @@ export class Bookings extends HTMLElement {
   attachEventListeners() {
     this.querySelectorAll("button[data-booking-id]").forEach((button) => {
       button.addEventListener("click", (e) => {
-        // @ts-ignore
-        if (e.target && e.target.dataset) {
-          // @ts-ignore
-          const bookingId = e.target.dataset.bookingId;
-          // @ts-ignore
-          const action = e.target.dataset.action;
+        const button = e.target.closest('button[data-booking-id]');
+        if (button && button.dataset) {
+          const bookingId = button.dataset.bookingId;
+          const action = button.dataset.action;
           const status = action === "confirm" ? "confirmed" : "cancelled";
           this.updateBookingStatus(bookingId, status);
         }

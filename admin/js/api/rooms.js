@@ -36,12 +36,13 @@ export const InvokeDeleteRoom = async (id) => {
 
 /**
  *
- * @param {string} name
- * @param {number} capacity
- * @param {string} equipment
- * @param {string|null} image_url
+ * @param {Object} params
+ * @param {string} params.name
+ * @param {number} params.capacity
+ * @param {string} params.equipment
+ * @param {string|null} params.image_url
  */
-export const InvokeCreateRoom = async (name, capacity, equipment, image_url = null) => {
+export const InvokeCreateRoom = async ({ name, capacity, equipment, image_url = null }) => {
   if (name && capacity && equipment) {
     console.log("invoking create-room");
 
@@ -52,21 +53,25 @@ export const InvokeCreateRoom = async (name, capacity, equipment, image_url = nu
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: name,
-          capacity: capacity,
-          equipment: equipment,
-          image_url: image_url
+          name,
+          capacity,
+          equipment,
+          image_url
         }),
       });
 
       if (!(response.status === 201)) {
         throw new Error("Failed to create room.");
       }
+
+      return { success: true };
     } catch (error) {
       console.error("Error creating room:", error);
+      return { success: false, error };
     }
   } else {
     alert("Please fill in all fields before submitting.");
+    return { success: false };
   }
 };
 
