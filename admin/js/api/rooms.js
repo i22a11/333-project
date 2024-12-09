@@ -97,11 +97,20 @@ export const fetchRooms = async () => {
     const response = await fetch("/admin/api/info/index.php");
     const data = await response.json();
 
-    if (data.success) {
-      return data.data;
-    }
+    console.log("Raw API response:", data);
+    
+    // Since the API returns an array directly, transform it
+    // @ts-ignore
+    return data.map(room => ({
+      id: room.room_id,
+      name: room.room_name,
+      capacity: room.capacity,
+      equipment: room.equipment,
+      image_url: room.image_url
+    }));
   } catch (error) {
     console.error("Failed to fetch rooms:", error);
+    return []; // Return empty array on error instead of undefined
   }
 };
 

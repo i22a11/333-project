@@ -74,15 +74,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Render room management
-  if (rooms) {
-    rooms.forEach((element) => {
+  console.log("Fetched rooms:", rooms);
+
+  if (rooms && Array.isArray(rooms)) {
+    rooms.forEach((room) => {
       roomManagement.addRoom({
-        id: element.id,
-        name: element.name,
-        capacity: element.capacity,
-        equipment: element.equipment,
+        id: room.id,
+        name: room.name,
+        capacity: room.capacity,
+        equipment: room.equipment,
+        image_url: room.image_url
       });
     });
+  } else {
+    console.error("No rooms data available or invalid format");
   }
 
   roomManagement.render();
