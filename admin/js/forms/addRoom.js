@@ -99,7 +99,6 @@ export const addRoom = async (formContainer) => {
       }
 
       if (submitButton) {
-        submitButton.disabled = true;
         submitButton.textContent = 'Creating Room...';
       }
 
@@ -111,22 +110,26 @@ export const addRoom = async (formContainer) => {
       });
 
       if (response.success) {
-        // Reset form and close dialog
-        formContainer.reset();
-        const preview = document.getElementById('image-preview');
-        if (preview) {
-          preview.classList.add('hidden');
-        }
         dialog.close();
-        
-        // Reload the page to show the new room
         window.location.reload();
       } else {
-        throw new Error(response.message || "Failed to create room");
+        console.error('Room creation failed:', response);
+        if (response.details) {
+          console.log('Debug details:', response.details);
+        }
+        alert(response.error || 'Failed to create room. Please try again.');
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Create Room';
+        }
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert(error.message || "An error occurred. Please try again.");
+      console.error('Room creation error:', error);
+      alert('An error occurred while creating the room');
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Create Room';
+      }
     } finally {
       const submitButton = formContainer.querySelector('button[type="submit"]');
       if (submitButton) {
