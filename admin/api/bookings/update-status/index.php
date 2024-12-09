@@ -3,12 +3,19 @@
 require_once __DIR__ . '/../../../../db_connection.php';
 header('Content-Type: application/json');
 
-// session_start();
-// if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-//     http_response_code(403);
-//     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-//     exit;
-// }
+session_start();
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+    http_response_code(403);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Unauthorized access',
+        'debug' => [
+            'user_id' => isset($_SESSION['user_id']),
+            'user_role' => $_SESSION['user_role'] ?? 'not set'
+        ]
+    ]);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -22,7 +29,7 @@ $status = $data['status'] ?? null;
 
 if (!$booking_id || !$status || !in_array($status, ['pending', 'confirmed', 'cancelled'])) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid input']);
+    echo json_encode(['success' => false, 'message' => 'Invalid booking ID or status']);
     exit;
 }
 
@@ -50,10 +57,14 @@ try {
         'success' => true,
         'message' => 'Booking status updated successfully'
     ]);
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Failed to update booking status'
+        'message' => 'Database error occurred',
+        'debug' => [
+            'error_code' => $e->getCode(),
+            'error_message' => $e->getMessage()
+        ]
     ]);
 }
