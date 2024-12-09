@@ -10,7 +10,7 @@ export const InvokeDeleteRoom = async (id) => {
   }
 
   try {
-    const response = await fetch("/admin/api/delete-room", {
+    const response = await fetch("/admin/api/delete-room/index.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export const InvokeCreateRoom = async ({ name, capacity, equipment, image_url = 
       return { 
         success: false, 
         details: {
-          endpoint: "/admin/api/create-room/",
+          endpoint: "/admin/api/create-room/index.php",
           requestData: { name, capacity, equipment, image_url }
         }
       };
@@ -90,40 +90,27 @@ export const InvokeCreateRoom = async ({ name, capacity, equipment, image_url = 
   }
 };
 
-/**
- * Fetches the list of rooms from the server.
- * @returns {Promise<import("../types.mjs").Room[] | undefined>}
- */
+// Fetches the list of rooms from the server.
+// @returns {Promise<import("../types.mjs").Room[] | undefined>}
 export const fetchRooms = async () => {
   try {
-    const res = await fetch("/admin/api/info");
-    const rooms = await res.json();
-    
-    // @ts-ignore
-    let parsedRooms = rooms.map((room) => ({
-      id: room.room_id,
-      name: room.room_name,
-      capacity: room.capacity,
-      equipment: room.equipment
-    }));
+    const response = await fetch("/admin/api/info/index.php");
+    const data = await response.json();
 
-    return parsedRooms;
+    if (data.success) {
+      return data.data;
+    }
   } catch (error) {
-    alert("error fetching rooms, please try again later");
+    console.error("Failed to fetch rooms:", error);
   }
 };
 
-/**
- * Invokes the edit room API endpoint
- * @param {import("../types.mjs").Room} room
- * @returns {Promise<void>}
- */
+/** 
+Invokes the edit room API endpoint
+@param {import("../types.mjs").Room} room
+@returns {Promise<void>}
+*/
 export const InvokeEditRoom = async (room) => {
-  if (!room.id || !room.name || !room.capacity || !room.equipment) {
-    alert("All fields are required to edit a room.");
-    return;
-  }
-
   try {
     const response = await fetch("/admin/api/edit-room/index.php", {
       method: "POST",
@@ -134,17 +121,17 @@ export const InvokeEditRoom = async (room) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to edit the room.");
+      throw new Error("Failed to update the room.");
     }
 
     const result = await response.json();
     if (result.success) {
-      alert(result.message || "Room edited successfully!");
+      alert(result.message || "Room updated successfully!");
     } else {
-      alert(result.message || "Failed to edit the room.");
+      alert(result.message || "Failed to update the room.");
     }
   } catch (error) {
-    console.error("Error editing room:", error);
-    alert("An error occurred while trying to edit the room.");
+    console.error("Error updating room:", error);
+    alert("An error occurred while trying to update the room.");
   }
 };
