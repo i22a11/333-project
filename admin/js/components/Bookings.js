@@ -33,7 +33,7 @@ export class Bookings extends HTMLElement {
    */
   async updateBookingStatus(bookingId, status) {
     try {
-      const response = await fetch("/admin/api/bookings/update-status", {
+      const response = await fetch("/admin/api/bookings/update-status/index.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
